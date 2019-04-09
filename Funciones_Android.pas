@@ -100,10 +100,26 @@ procedure ReproducirAudio(ResourceID: string ;Nombre:String);
 procedure AnimacionProgreso(Titulo: string ;msg1:String;Tiempo1:Integer;msg2:String;Tiempo2:Integer;msg3:String;Tiempo3:Integer;msg4:String;Tiempo4:Integer;msg5:String;Tiempo5:Integer);
 {Muestra un mensaje en la parte inferior de la pantalla con una imagen}
 procedure ToastImagen(Mensaje:string ;Duracion:Boolean;Imagen:TBitmap;colorFondo:TAlphaColor;colorTexto:TAlphaColor);
+{Regresa como string el nombre del dia en la fecha especificada}
+function Nombre_Dia(fecha: TDateTime):String;
 implementation
 
 uses
   FGX.Toasts, Androidapi.JNI.Toasts;
+(**********************************************************************)
+function Nombre_Dia(Fecha: TDateTime):String;
+var
+days: array[1..7] of string;
+begin
+  days[1] := 'Domingo';
+  days[2] := 'Lunes';
+  days[3] := 'Martes';
+  days[4] := 'Miercoles';
+  days[5] := 'Jueves';
+  days[6] := 'Viernes';
+  days[7] := 'Sabado';
+  Result:=(days[System.SysUtils.DayOfWeek(Fecha)]);
+end;
 (**********************************************************************)
 {Recibe el mensaje, la duracion como boleano (true para largo, false para corto), la imagen que debe estar en el proyecto,y los colores en hexadecimal}
 procedure ToastImagen(Mensaje:string ;Duracion:Boolean;Imagen:TBitmap;colorFondo:TAlphaColor;colorTexto:TAlphaColor);
@@ -217,7 +233,7 @@ end;
  (**********************************************************************)
 function StrFecha(fecha: TDateTime):String;
 begin
-  Result:=((formatdatetime('d.m.y', fecha)));
+  Result:=((formatdatetime('d/m/y', fecha)));
 end;
 (**********************************************************************)
 function StrFecha_Hora(fecha_Hora:TDateTime):String;

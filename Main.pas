@@ -325,7 +325,7 @@ begin
       Clear;
       Add('Select Cantidad from Lista where Empleado=:Empleado and Fecha=:Fecha and Trabajo=:Trabajo');
       Params[0].AsString:=ComboEmpleadosLista.Selected.Text;
-      Params[1].AsDate:=FechaLista.Date;
+      Params[1].AsDate:=FechaLista.DateTime;
       Params[2].AsString:=TListViewItem(ListView1.Selected).Text;
       Close;
       Open;
@@ -368,7 +368,7 @@ begin
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Empleado(Nombre TEXT,Ganancia TEXT)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Reparacion(Empleado TEXT,Folio INTEGER,Precio TEXT,Cantidad INTEGER,Descripcion TEXT,Fecha TEXT,Fecha_Hora TEXT)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Trabajo(Trabajo TEXT,Informacion TEXT,Tiempo INTEGER,Limite Integer)');
-  Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Lista(Trabajo TEXT,Empleado TEXT,Cantidad TEXT,Fecha DATE)');
+  Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Lista(Trabajo TEXT,Empleado TEXT,Cantidad TEXT,Fecha DATE,FechaReal Text)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Seguridad(Pass TEXT)');
  end;
 //Antes de conectar identifica la base de datos
@@ -426,6 +426,9 @@ end;
 
 
 procedure TMainForm.DiaInicioEntrega;
+var
+  Dias:string;
+  Fecha:string;
 begin
   //Muestra el dia de inicio para el trabajo
   if not Limite then
@@ -435,17 +438,16 @@ begin
       begin
         Active :=  False;
         Clear;
-       // Add('SELECT date (Fecha,''+'+Tiempo.ToString+'day'') ');
-        Add('SELECT date (Fecha,'+''''+'+'+Tiempo.ToString+'day'+''''+')');
-        Add('FROM lista  where Empleado=:Empleado and Trabajo=:Trabajo ');
+        Dias:=('''+'+Tiempo.ToString+' day'') ');
+        Add('SELECT date (Fecha,'+Dias+' ,FechaReal');
+        Add(' FROM lista  where Empleado=:Empleado and Trabajo=:Trabajo ');
         Add(' ORDER by Fecha desc LIMIT 1');
-        //Params[0].AsInteger:=(Tiempo);
         Params[0].AsString:=ComboEmpleadosLista.Selected.Text;
         Params[1].AsString:=TListViewItem(ListView1.Selected).Text;
         Close;
         Open;
-        Cliente.Text:=Fields[0].AsString;
-        Showmessage('Primero'+Fields[0].AsString  );
+        Fecha:= (Fields[0].AsString);
+        //Cliente.Text:=Nombre_Dia(Strtodate(Fields[0].AsString))  ;
         Clear;
         Add('SELECT fecha');
         Add('FROM lista  where Empleado=:Empleado and Trabajo=:Trabajo ');
@@ -455,7 +457,7 @@ begin
         Close;
         Open;
         Empleado.Text:=Fields[0].AsString ;
-        Showmessage('2'+Fields[0].AsString);
+        Showmessage('segndo '+Fields[0].AsString);
       end
       except
       on E:exception do
@@ -469,12 +471,12 @@ begin
       begin
         Active :=  False;
         Clear;
-        Add('SELECT date (Fecha,:Dias) ');
+        Dias:=('''+'+(Tiempo+1).ToString+' day'') ');
+        Add('SELECT date (Fecha,'+Dias);
         Add('FROM lista  where Empleado=:Empleado and Trabajo=:Trabajo ');
         Add(' ORDER by Fecha desc LIMIT 1');
-        Params[0].AsString:=('+'+(Tiempo +1).ToString+' day');
-        Params[1].AsString:=ComboEmpleadosLista.Selected.Text;
-        Params[2].AsString:=TListViewItem(ListView1.Selected).Text;
+        Params[0].AsString:=ComboEmpleadosLista.Selected.Text;
+        Params[1].AsString:=TListViewItem(ListView1.Selected).Text;
         Close;
         Open;
         Cliente.Text:=Fields[0].AsString;
@@ -550,11 +552,12 @@ begin
     begin
       Active :=  False;
       Clear;
-      Add('Insert into Lista(Trabajo,Empleado,Cantidad,Fecha) values (:Trabajo,:Empleado,:Cantidad,:Fecha)');
+      Add('Insert into Lista(Trabajo,Empleado,Cantidad,Fecha,FechaReal) values (:Trabajo,:Empleado,:Cantidad,:Fecha,:FechaReal)');
       Params[0].AsString:=TListViewItem(ListView1.Selected).Text;
       Params[1].AsString:=ComboEmpleadosLista.Selected.Text;
       Params[2].AsString:='1';
       Params[3].AsDate:=FechaLista.Date;
+      Params[4].AsString:=(StrFecha(FechaLista.DateTime));
       FDQueryInsertar.ExecSQL;
     end;
    // Result:=True;
@@ -932,7 +935,7 @@ begin
       Clear;
       Add('Select Trabajo,Cantidad,Fecha from Lista where Empleado=:Empleado and Fecha=:Fecha');
       Params[0].AsString:=ComboEmpleadosLista.Selected.Text;
-      Params[1].AsDate:=FechaLista.Date;
+      Params[1].AsDateTime:=FechaLista.DateTime;
       close;
       Open;
       while not Eof do
@@ -1020,7 +1023,7 @@ begin
       Clear;
       Add('Update Lista set Cantidad=Cantidad -1 where Empleado=:Empleado and Fecha=:Fecha and Trabajo=:Trabajo ');
       Params[0].AsString:=ComboEmpleadosLista.Selected.Text;
-      Params[1].AsDate:=FechaLista.Date;
+      Params[1].AsDateTime:=FechaLista.Date;
       Params[2].AsString:=TListViewItem(ListView1.Selected).Text;
       FDQueryInsertar.ExecSQL
     end;
@@ -1037,7 +1040,6 @@ procedure TMainForm.SpeedButton1Click(Sender: TObject);
 begin
  if ComboEmpListaSelected then
  begin
-
   BuscarLista;
   if S.Equals('') then InsertarLista
   else SumarLista;
@@ -1074,7 +1076,7 @@ begin
       Clear;
       Add('Update Lista set Cantidad=Cantidad +1 where Empleado=:Empleado and Fecha=:Fecha and Trabajo=:Trabajo');
       Params[0].AsString:=ComboEmpleadosLista.Selected.Text;
-      Params[1].AsDate:=FechaLista.Date;
+      Params[1].AsDateTime:=FechaLista.DateTime;
       Params[2].AsString:=TListViewItem(ListView1.Selected).Text;
       FDQueryInsertar.ExecSQL
     end;

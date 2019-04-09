@@ -615,18 +615,24 @@ object MainForm: TMainForm
       object Cliente: TLabel
         Position.X = 24.000000000000000000
         Position.Y = 31.000000000000000000
+        Size.Width = 265.000000000000000000
+        Size.Height = 23.000000000000000000
+        Size.PlatformDefault = False
         Text = 'Cliente'
         TabOrder = 6
       end
       object Empleado: TLabel
         Position.X = 24.000000000000000000
         Position.Y = 7.000000000000000000
+        Size.Width = 257.000000000000000000
+        Size.Height = 23.000000000000000000
+        Size.PlatformDefault = False
         Text = 'Empleado'
         TabOrder = 7
       end
       object Button1: TButton
-        Position.X = 216.000000000000000000
-        Position.Y = 15.000000000000000000
+        Position.X = 232.000000000000000000
+        Position.Y = 271.000000000000000000
         TabOrder = 8
         Text = 'Button1'
         OnClick = Button1Click
@@ -701,7 +707,6 @@ object MainForm: TMainForm
     Size.Width = 758.000000000000000000
     Size.Height = 439.000000000000000000
     Size.PlatformDefault = False
-    Visible = False
     TabOrder = 28
     object Layout8: TLayout
       Align = MostTop
@@ -4420,7 +4425,6 @@ object MainForm: TMainForm
     Size.Width = 758.000000000000000000
     Size.Height = 439.000000000000000000
     Size.PlatformDefault = False
-    Visible = False
     TabOrder = 27
     object Layout4: TLayout
       Align = MostTop
