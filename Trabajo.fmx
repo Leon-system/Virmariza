@@ -1,0 +1,143 @@
+object Reparacion: TReparacion
+  Left = 0
+  Top = 0
+  Caption = 'FTrabajo'
+  ClientHeight = 467
+  ClientWidth = 631
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  DesignerMasterStyle = 3
+  object Layout2: TLayout
+    Align = Top
+    Position.Y = 81.000000000000000000
+    Size.Width = 631.000000000000000000
+    Size.Height = 33.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    object edtTrabajo: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Align = Left
+      TabOrder = 0
+      Size.Width = 225.000000000000000000
+      Size.Height = 32.000000000000000000
+      Size.PlatformDefault = False
+      TextPrompt = 'Nombre'
+    end
+    object edtinfo: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Align = Center
+      TabOrder = 1
+      Size.Width = 197.000000000000000000
+      Size.Height = 32.000000000000000000
+      Size.PlatformDefault = False
+      TextPrompt = 'Costo/Informaci'#243'n'
+    end
+  end
+  object Layout3: TLayout
+    Align = Top
+    Position.Y = 114.000000000000000000
+    Size.Width = 631.000000000000000000
+    Size.Height = 40.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    object edtLimite: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Align = Left
+      TabOrder = 0
+      KeyboardType = DecimalNumberPad
+      Position.Y = 4.000000000000000000
+      Size.Width = 281.000000000000000000
+      Size.Height = 32.000000000000000000
+      Size.PlatformDefault = False
+      TextPrompt = 'Limite por dia'
+    end
+    object edtTiempo: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Align = Center
+      TabOrder = 1
+      KeyboardType = DecimalNumberPad
+      Size.Width = 254.000000000000000000
+      Size.Height = 32.000000000000000000
+      Size.PlatformDefault = False
+      TextPrompt = 'Tiempo de espera'
+    end
+  end
+  object Layout4: TLayout
+    Align = Top
+    Position.Y = 154.000000000000000000
+    Size.Width = 631.000000000000000000
+    Size.Height = 40.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    object BtnBorrarTrabajo: TButton
+      Align = Left
+      Size.Width = 97.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = 'Borrar'
+      OnClick = BtnBorrarTrabajoClick
+    end
+    object btnActualizar: TButton
+      Align = Left
+      Position.X = 97.000000000000000000
+      Size.Width = 103.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = 'Actualizar'
+      OnClick = btnActualizarClick
+    end
+    object BtnGuardarTrabajo: TButton
+      Align = Left
+      Position.X = 200.000000000000000000
+      Size.Width = 103.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = 'Insertar'
+      OnClick = BtnGuardarTrabajoClick
+    end
+  end
+  object Layout5: TLayout
+    Align = Top
+    Position.Y = 49.000000000000000000
+    Size.Width = 631.000000000000000000
+    Size.Height = 32.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 5
+    object ComboTrabajo: TComboBox
+      Align = Right
+      Position.X = 272.000000000000000000
+      Size.Width = 359.000000000000000000
+      Size.Height = 32.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      OnChange = ComboTrabajoChange
+    end
+    object Label1: TLabel
+      Align = Left
+      Size.Width = 289.000000000000000000
+      Size.Height = 32.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Seleccione un tipo de trabajo'#13#10
+      TabOrder = 1
+    end
+  end
+  object Line1: TLine
+    Align = Top
+    LineType = Diagonal
+    Position.Y = 48.000000000000000000
+    Size.Width = 631.000000000000000000
+    Size.Height = 1.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object ToolBar1: TToolBar
+    Size.Width = 631.000000000000000000
+    Size.Height = 48.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+  end
+end
