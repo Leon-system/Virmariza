@@ -164,6 +164,7 @@ type
     procedure ListView1Change(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure LayoutChangeClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
    Hoy :TDateTime;
    ComboEmpSelected:Boolean;
@@ -344,7 +345,7 @@ procedure TMainForm.Button1Click(Sender: TObject);
 begin
   //ShowMessage(Date2Str(myDate));
   // use dt as needed...
-  // ObtenerTipoTrabajo;
+   ObtenerTipoTrabajo;
   //ShowMessage(Nombre_Dia(MyDate));
   //ShowMessage(StrFecha(StrToDate(MyDate)));
   //ShowMessage(System.SysUtils.FormatSettings.LongMonthNames[1]);
@@ -446,16 +447,15 @@ begin
         Active :=  False;
         Clear;
         Dias:=('''+'+Tiempo.ToString+' day'') ');
-        Add('SELECT date (Fecha,'+Dias+' ,FechaReal');
+        Add('SELECT date (Fecha,'+Dias);
         Add(' FROM lista  where Empleado=:Empleado and Trabajo=:Trabajo ');
         Add(' ORDER by Fecha desc LIMIT 1');
         Params[0].AsString:=ComboEmpleadosLista.Selected.Text;
         Params[1].AsString:=TListViewItem(ListView1.Selected).Text;
         Close;
         Open;
-        Fecha:= (Fields[0].AsString);
         FReal:=FechaReal(Fields[0].AsString);
-        Cliente.Text:=(Nombre_Dia(FReal)+'Numero '+'De '+Nombre_Mes(Freal));
+        Cliente.Text:=('Entrega: '+Nombre_Dia(FReal)+' '+(formatdatetime('D', Freal))+' De '+Nombre_Mes(Freal));
         Clear;
         Add('SELECT fecha');
         Add('FROM lista  where Empleado=:Empleado and Trabajo=:Trabajo ');
@@ -464,8 +464,8 @@ begin
         Params[1].AsString:=TListViewItem(ListView1.Selected).Text;
         Close;
         Open;
-        Empleado.Text:=Fields[0].AsString ;
-        Showmessage('segndo '+Fields[0].AsString);
+        FReal:=FechaReal(Fields[0].AsString);
+        Empleado.Text:=('Inicio: '+Nombre_Dia(FReal)+' '+(formatdatetime('D', Freal))+' De '+Nombre_Mes(Freal));
       end
       except
       on E:exception do
@@ -487,16 +487,18 @@ begin
         Params[1].AsString:=TListViewItem(ListView1.Selected).Text;
         Close;
         Open;
-        Cliente.Text:=Fields[0].AsString;
+        FReal:=FechaReal(Fields[0].AsString);
+        Cliente.Text:=('Entrega: '+Nombre_Dia(FReal)+' '+(formatdatetime('D', Freal))+' De '+Nombre_Mes(Freal));
         Clear;
-        Add('SELECT fecha (Fecha,+1 day)');
+        Add('SELECT date (Fecha,''+1 day'')');
         Add('FROM lista  where Empleado=:Empleado and Trabajo=:Trabajo ');
         Add(' ORDER by Fecha desc LIMIT 1');
         Params[0].AsString:=ComboEmpleadosLista.Selected.Text;
         Params[1].AsString:=TListViewItem(ListView1.Selected).Text;
         Close;
         Open;
-        Empleado.Text:=Fields[0].AsString
+        FReal:=FechaReal(Fields[0].AsString);
+        Empleado.Text:=('Inicio: '+Nombre_Dia(FReal)+' '+(formatdatetime('D', Freal))+' De '+Nombre_Mes(Freal));
       end
       except
       on E:exception do
@@ -530,8 +532,12 @@ begin
   ObtenerLineas;
   ObtenerEmpleadosLista;
   ObtenerEmpleadosTrabajo;
-  ObtenerTipoTrabajo;
   InsertarPass;
+end;
+
+procedure TMainForm.FormShow(Sender: TObject);
+begin
+  ObtenerTipoTrabajo;
 end;
 
 procedure TMainForm.GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
@@ -704,8 +710,9 @@ begin
       Params[0].AsString:=TListViewItem(ListView1.Selected).Text;
       close;
       Open;
-      CantidadLimite:=Fields[0].AsInteger;
-      Tiempo:=Fields[1].AsInteger;
+      CantidadLimite:=Fields[0].AsInteger;//Este es el limite de cantidad por dia de ese trabajo
+      Tiempo:=Fields[1].AsInteger;//Es el tiempo que ese trabajo se tarda en realizarse
+      {Busca la ultima fecha que tiene registro de ese trabajo}
       Clear;
       Add('SELECT fecha  ');
       Add('FROM lista  where Empleado=:Empleado and Trabajo=:Trabajo ');
@@ -714,9 +721,10 @@ begin
       Params[1].AsString:=TListViewItem(ListView1.Selected).Text;
       close;
       Open;
-      UltimaFecha:=Fields[0].AsString;
+      UltimaFecha:=Fields[0].AsString;//La ultima fecha con ese tipo de trabajo
+      {Cuenta la cantidad de trabajo que hay en esa fecha}
       Clear;
-      Add('SELECT count (*)');
+      Add('SELECT cantidad');
       Add('FROM lista ');
       Add('WHERE empleado=:Empleado and Trabajo=:Trabajo  and Fecha=:Fecha');
       Params[0].AsString:=ComboEmpleadosLista.Selected.Text;
@@ -724,6 +732,7 @@ begin
       Params[2].AsString:=UltimaFecha;
       close;
       Open;
+      {Compara la cantidad de trabajo de ese dia con el limite x dia}
       if Fields[0].asInteger >= CantidadLimite then Result:=True else Result:=False;
       //Cantidad:=Fields[0].AsInteger;
     end;
@@ -735,7 +744,7 @@ end;
 
 Procedure TMainForm.ListView1Change(Sender: TObject);
 begin
-  DiaInicioEntrega;
+  if ComboEmpListaSelected then DiaInicioEntrega;
 end;
 
 procedure TMainForm.LlenarLista;

@@ -110,7 +110,7 @@ implementation
 
 uses
   FGX.Toasts, Androidapi.JNI.Toasts;
-  (**********************************************************************)
+(**********************************************************************)
 {Convierte la fecha de android YYYY-MM-DD a DD/MM/YYYY}
 function FechaReal(Text: String):TDate;
 var
