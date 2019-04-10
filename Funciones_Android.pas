@@ -102,10 +102,36 @@ procedure AnimacionProgreso(Titulo: string ;msg1:String;Tiempo1:Integer;msg2:Str
 procedure ToastImagen(Mensaje:string ;Duracion:Boolean;Imagen:TBitmap;colorFondo:TAlphaColor;colorTexto:TAlphaColor);
 {Regresa como string el nombre del dia en la fecha especificada}
 function Nombre_Dia(fecha: TDateTime):String;
+{Regresa como string el nombre del mes en la fecha especificada}
+function Nombre_Mes(fecha: TDateTime):String;
+{Cambia los guiones medios por slash - /}
+function FechaReal(Text: String):TDate;
 implementation
 
 uses
   FGX.Toasts, Androidapi.JNI.Toasts;
+  (**********************************************************************)
+{Convierte la fecha de android YYYY-MM-DD a DD/MM/YYYY}
+function FechaReal(Text: String):TDate;
+var
+myStr: string;
+begin
+  MyStr:=StringReplace(Text, '-', '',
+                          [rfReplaceAll, rfIgnoreCase]);
+  Result := EncodeDate(
+    StrToInt(Copy(MyStr, 1, 4)),
+    StrToInt(Copy(MyStr, 5, 2)),
+    StrToInt(Copy(MyStr, 7, 2))
+  );
+end;
+(**********************************************************************)
+function Nombre_Mes(fecha:TDateTime):String;
+var
+Mes:String;
+begin
+  Mes:=((formatdatetime('m', fecha)));
+  Result:=(System.SysUtils.FormatSettings.LongMonthNames[Mes.ToInteger]);
+end;
 (**********************************************************************)
 function Nombre_Dia(Fecha: TDateTime):String;
 var

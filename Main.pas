@@ -163,6 +163,7 @@ type
     procedure InsertarPass;
     procedure ListView1Change(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure LayoutChangeClick(Sender: TObject);
   private
    Hoy :TDateTime;
    ComboEmpSelected:Boolean;
@@ -341,7 +342,12 @@ end;
 
 procedure TMainForm.Button1Click(Sender: TObject);
 begin
-  ObtenerTipoTrabajo;
+  //ShowMessage(Date2Str(myDate));
+  // use dt as needed...
+  // ObtenerTipoTrabajo;
+  //ShowMessage(Nombre_Dia(MyDate));
+  //ShowMessage(StrFecha(StrToDate(MyDate)));
+  //ShowMessage(System.SysUtils.FormatSettings.LongMonthNames[1]);
 end;
 
 procedure TMainForm.ComboBoxLineaChange(Sender: TObject);
@@ -429,6 +435,7 @@ procedure TMainForm.DiaInicioEntrega;
 var
   Dias:string;
   Fecha:string;
+  FReal:TDateTime;
 begin
   //Muestra el dia de inicio para el trabajo
   if not Limite then
@@ -447,7 +454,8 @@ begin
         Close;
         Open;
         Fecha:= (Fields[0].AsString);
-        //Cliente.Text:=Nombre_Dia(Strtodate(Fields[0].AsString))  ;
+        FReal:=FechaReal(Fields[0].AsString);
+        Cliente.Text:=(Nombre_Dia(FReal)+'Numero '+'De '+Nombre_Mes(Freal));
         Clear;
         Add('SELECT fecha');
         Add('FROM lista  where Empleado=:Empleado and Trabajo=:Trabajo ');
@@ -675,6 +683,11 @@ begin
   end;
 end;
 //Llena la lista de trabajos
+procedure TMainForm.LayoutChangeClick(Sender: TObject);
+begin
+ //No insertar aqui
+end;
+
 function TMainForm.Limite: Boolean;
 var
 UltimaFecha:String;
