@@ -16,3 +16,6 @@ Visible=False
 [MainForm.FDMemFilaTrabajo]
 Visible=False
 
+[MainForm.FDMemLista]
+Visible=False
+

@@ -40,8 +40,8 @@ type
     StringGridTrabajos: TStringGrid;
     Layout1: TLayout;
     EditDesc: TEdit;
-    Label3: TLabel;
-    Label4: TLabel;
+    lblSubtotal: TLabel;
+    lblTotal: TLabel;
     btnLinea: TSpeedButton;
     btnReparacion: TSpeedButton;
     btnArticulos: TSpeedButton;
@@ -117,7 +117,6 @@ type
     btnRegresar: TImage;
     edtPass1: TEdit;
     edtNewPass: TEdit;
-    Button1: TButton;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure ConexionBeforeConnect(Sender: TObject);
@@ -128,6 +127,8 @@ type
     procedure LlenarLista;
     procedure ObtenerLineas;
     procedure ObtenerEmpleadosTrabajo;
+    //Trabajo/Ganancia
+    procedure Total_Subtotal;
     //Lista
     procedure ObtenerLista;
     procedure ObtenerEmpleadosLista;
@@ -138,6 +139,7 @@ type
     procedure BuscarLista;
     procedure DiaInicioEntrega;
     Function Limite:Boolean;
+    function LimiteR:Boolean;
     procedure ComboBoxLineaChange(Sender: TObject);
     //Otro
     procedure TimerPresentacionTimer(Sender: TObject);
@@ -165,6 +167,8 @@ type
     procedure Button1Click(Sender: TObject);
     procedure LayoutChangeClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure TabItem2Click(Sender: TObject);
+    procedure TabItem3Click(Sender: TObject);
   private
    Hoy :TDateTime;
    ComboEmpSelected:Boolean;
@@ -301,6 +305,7 @@ begin
     ShowMessage('Debe ingresar un folio o descripcion del trabajo,con su respectivo precio y cantidad') else
     InsertarTrabajo;
     ObtenerTrabajos;
+    Total_Subtotal;
   end
   else ShowMessage('Debe seleccionar un empleado');
 end;
@@ -359,6 +364,7 @@ end;
 begin
    ComboEmpSelected:=True;
    ObtenerTrabajos;
+   Total_Subtotal;
 end;
 
 procedure TMainForm.ComboEmpleadosListaChange(Sender: TObject);
@@ -373,7 +379,7 @@ begin
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS ARTICULO(NOMBRE TEXT NOT NULL,LINEA TEXT NOT NULL,CANTIDAD TEXT NOT NULL,COSTO TEXT,PUBLICO TEXT,MAYOREO TEXT,BOLERO TEXT,ESPECIAL TEXT,P_PUBLICO TEXT,P_MAYOREO TEXT,P_BOLERO TEXT, P_ESPECIAL TEXT)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Linea(Nombre TEXT NOT NULL)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Empleado(Nombre TEXT,Ganancia TEXT)');
-  Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Reparacion(Empleado TEXT,Folio INTEGER,Precio TEXT,Cantidad INTEGER,Descripcion TEXT,Fecha TEXT,Fecha_Hora TEXT)');
+  Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Reparacion(Empleado TEXT,Folio INTEGER,Precio NUMERIC,Cantidad INTEGER,Descripcion TEXT,Fecha TEXT,Fecha_Hora TEXT)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Trabajo(Trabajo TEXT,Informacion TEXT,Tiempo INTEGER,Limite Integer)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Lista(Trabajo TEXT,Empleado TEXT,Cantidad TEXT,Fecha DATE,FechaReal Text)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Seguridad(Pass TEXT)');
@@ -435,11 +441,10 @@ end;
 procedure TMainForm.DiaInicioEntrega;
 var
   Dias:string;
-  Fecha:string;
   FReal:TDateTime;
 begin
   //Muestra el dia de inicio para el trabajo
-  if not Limite then
+  if not LimiteR then
   begin
     try
       with FDQueryBuscar,SQL do
@@ -455,6 +460,21 @@ begin
         Close;
         Open;
         FReal:=FechaReal(Fields[0].AsString);
+        if Nombre_Dia(FReal).Equals('Domingo') then
+        begin
+          Clear;
+          Dias:=('''+'+(Tiempo+1).ToString+' day'') ');
+          Add('SELECT date (Fecha,'+Dias);
+          Add('FROM lista  where Empleado=:Empleado and Trabajo=:Trabajo ');
+          Add(' ORDER by Fecha desc LIMIT 1');
+          Params[0].AsString:=ComboEmpleadosLista.Selected.Text;
+          Params[1].AsString:=TListViewItem(ListView1.Selected).Text;
+          Close;
+          Open;
+          FReal:=FechaReal(Fields[0].AsString);
+          Cliente.Text:=('Entrega: '+Nombre_Dia(FReal)+' '+(formatdatetime('D', Freal))+' De '+Nombre_Mes(Freal));
+        end
+        else Cliente.Text:=('Entrega: '+Nombre_Dia(FReal)+' '+(formatdatetime('D', Freal))+' De '+Nombre_Mes(Freal));
         Cliente.Text:=('Entrega: '+Nombre_Dia(FReal)+' '+(formatdatetime('D', Freal))+' De '+Nombre_Mes(Freal));
         Clear;
         Add('SELECT fecha');
@@ -465,7 +485,20 @@ begin
         Close;
         Open;
         FReal:=FechaReal(Fields[0].AsString);
-        Empleado.Text:=('Inicio: '+Nombre_Dia(FReal)+' '+(formatdatetime('D', Freal))+' De '+Nombre_Mes(Freal));
+        if Nombre_Dia(FReal).Equals('Domingo') then
+        begin
+          Clear;
+          Add('SELECT date (Fecha,''+1 day'')');
+          Add('FROM lista  where Empleado=:Empleado and Trabajo=:Trabajo ');
+          Add(' ORDER by Fecha desc LIMIT 1');
+          Params[0].AsString:=ComboEmpleadosLista.Selected.Text;
+          Params[1].AsString:=TListViewItem(ListView1.Selected).Text;
+          Close;
+          Open;
+          FReal:=FechaReal(Fields[0].AsString);
+          Cliente.Text:=('Entrega: '+Nombre_Dia(FReal)+' '+(formatdatetime('D', Freal))+' De '+Nombre_Mes(Freal));
+        end
+        else Empleado.Text:=('Inicio: '+Nombre_Dia(FReal)+' '+(formatdatetime('D', Freal))+' De '+Nombre_Mes(Freal));
       end
       except
       on E:exception do
@@ -488,6 +521,21 @@ begin
         Close;
         Open;
         FReal:=FechaReal(Fields[0].AsString);
+        if Nombre_Dia(FReal).Equals('Domingo') then
+        begin
+          Clear;
+          Dias:=('''+'+(Tiempo+2).ToString+' day'') ');
+          Add('SELECT date (Fecha,'+Dias);
+          Add('FROM lista  where Empleado=:Empleado and Trabajo=:Trabajo ');
+          Add(' ORDER by Fecha desc LIMIT 1');
+          Params[0].AsString:=ComboEmpleadosLista.Selected.Text;
+          Params[1].AsString:=TListViewItem(ListView1.Selected).Text;
+          Close;
+          Open;
+          FReal:=FechaReal(Fields[0].AsString);
+          Cliente.Text:=('Entrega: '+Nombre_Dia(FReal)+' '+(formatdatetime('D', Freal))+' De '+Nombre_Mes(Freal));
+        end
+        else
         Cliente.Text:=('Entrega: '+Nombre_Dia(FReal)+' '+(formatdatetime('D', Freal))+' De '+Nombre_Mes(Freal));
         Clear;
         Add('SELECT date (Fecha,''+1 day'')');
@@ -498,7 +546,20 @@ begin
         Close;
         Open;
         FReal:=FechaReal(Fields[0].AsString);
-        Empleado.Text:=('Inicio: '+Nombre_Dia(FReal)+' '+(formatdatetime('D', Freal))+' De '+Nombre_Mes(Freal));
+        if Nombre_Dia(FReal).Equals('Domingo') then
+        begin
+          Clear;
+          Add('SELECT date (Fecha,''+2 day'')');
+          Add('FROM lista  where Empleado=:Empleado and Trabajo=:Trabajo ');
+          Add(' ORDER by Fecha desc LIMIT 1');
+          Params[0].AsString:=ComboEmpleadosLista.Selected.Text;
+          Params[1].AsString:=TListViewItem(ListView1.Selected).Text;
+          Close;
+          Open;
+          FReal:=FechaReal(Fields[0].AsString);
+          Cliente.Text:=('Entrega: '+Nombre_Dia(FReal)+' '+(formatdatetime('D', Freal))+' De '+Nombre_Mes(Freal));
+        end
+        else Empleado.Text:=('Inicio: '+Nombre_Dia(FReal)+' '+(formatdatetime('D', Freal))+' De '+Nombre_Mes(Freal));
       end
       except
       on E:exception do
@@ -509,7 +570,10 @@ end;
 
 procedure TMainForm.FechaListaChange(Sender: TObject);
 begin
-   if ComboEmpListaSelected then  ObtenerLista;
+  if ComboEmpListaSelected then
+  begin
+   ObtenerLista;
+  end;
 end;
 
 procedure TMainForm.FechaTrabajosChange(Sender: TObject);
@@ -518,16 +582,9 @@ begin
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
-var
-Fecha:string;
 begin
-  Hoy:=Now;
   { This defines the default active tab at runtime }
   TabControl1.ActiveTab := TabItem1;
-  //Establece la fecha de hoy en los buscadores de fecha
-  Fecha:=(formatdatetime('d/m/y', Hoy));
-  FechaLista.Date:=Hoy;
-  FechaTrabajos.Date:=Hoy;
   //Obtiene todos los datos nesesarios
   ObtenerLineas;
   ObtenerEmpleadosLista;
@@ -537,7 +594,7 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  ObtenerTipoTrabajo;
+  ObtenerTipoTrabajo
 end;
 
 procedure TMainForm.GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
@@ -695,10 +752,45 @@ begin
 end;
 
 function TMainForm.Limite: Boolean;
-var
-UltimaFecha:String;
 begin
    try
+    with FDQueryBuscar,SQL do
+    begin
+      {Busca la ultima fecha que tiene registros de ese usuario
+      y de ese trabajo}
+      Active :=  False;
+      Clear;
+      Add('SELECT Limite,Tiempo ');
+      Add('FROM Trabajo  where  Trabajo=:Trabajo ');
+      Params[0].AsString:=TListViewItem(ListView1.Selected).Text;
+      close;
+      Open;
+      CantidadLimite:=Fields[0].AsInteger;//Este es el limite de cantidad por dia de ese trabajo
+      Tiempo:=Fields[1].AsInteger;//Es el tiempo que ese trabajo se tarda en realizarse
+      Clear;
+      Add('SELECT cantidad');
+      Add('FROM lista ');
+      Add('WHERE empleado=:Empleado and Trabajo=:Trabajo  and Fecha=:Fecha');
+      Params[0].AsString:=ComboEmpleadosLista.Selected.Text;
+      Params[1].AsString:=TListViewItem(ListView1.Selected).Text;
+      Params[2].AsDate:=FechaLista.Date;
+      close;
+      Open;
+      {Compara la cantidad de trabajo de ese dia con el limite x dia}
+      if Fields[0].asInteger >= CantidadLimite then Result:=True else Result:=False;
+      //Cantidad:=Fields[0].AsInteger;
+    end;
+    except
+    on E:Exception do
+    showmessage(E.Message);
+  end;
+end;
+
+function TMainForm.LimiteR: Boolean;
+var
+UltimaFecha:string;
+begin
+  try
     with FDQueryBuscar,SQL do
     begin
       {Busca la ultima fecha que tiene registros de ese usuario
@@ -715,7 +807,7 @@ begin
       {Busca la ultima fecha que tiene registro de ese trabajo}
       Clear;
       Add('SELECT fecha  ');
-      Add('FROM lista  where Empleado=:Empleado and Trabajo=:Trabajo ');
+      Add('FROM lista  where Empleado=:Empleado and Trabajo=:Trabajo');
       Add(' ORDER by Fecha desc LIMIT 1');
       Params[0].AsString:=ComboEmpleadosLista.Selected.Text;
       Params[1].AsString:=TListViewItem(ListView1.Selected).Text;
@@ -744,7 +836,11 @@ end;
 
 Procedure TMainForm.ListView1Change(Sender: TObject);
 begin
-  if ComboEmpListaSelected then DiaInicioEntrega;
+  if ComboEmpListaSelected then
+  begin
+    BuscarLista;
+    if not S.Equals('') then  DiaInicioEntrega;
+  end
 end;
 
 procedure TMainForm.LlenarLista;
@@ -1014,7 +1110,7 @@ begin
       Clear;
       Add('Select Folio,Precio,Descripcion,Cantidad from Reparacion where Empleado=:Empleado and Fecha=:Fecha');
       Params[0].AsString:=ComboEmpleado.Selected.Text;
-      Params[1].AsDate:=FechaTrabajos.Date;
+      Params[1].AsString:=(formatdatetime('d/m/y',FechaTrabajos.Date ));
       close;
       Open;
       while not Eof do
@@ -1057,14 +1153,32 @@ begin
   end;
 end;
 
-//Acciones realizadas al momento de oprimir una celda en el grid
 procedure TMainForm.SpeedButton1Click(Sender: TObject);
 begin
  if ComboEmpListaSelected then
  begin
   BuscarLista;
   if S.Equals('') then InsertarLista
-  else SumarLista;
+  else
+  begin
+    if Limite then
+    begin
+      MessageDlg('Este trabajo ya alcanzo su límite para el día seleccionado,¿Está seguro de insertarlo igualmente? ', System.UITypes.TMsgDlgType.mtInformation,
+      [System.UITypes.TMsgDlgBtn.mbOK,System.UITypes.TMsgDlgBtn.mbNo], 0, procedure(const AResult: System.UITypes.TModalResult)
+      begin
+        case AResult of
+          mrOk:
+          begin
+            SumarLista;
+            ObtenerLista;
+          end;
+          mrNo:
+        end;
+      end);
+    end
+    else SumarLista;
+    ObtenerLista;
+  end;
   ObtenerLista;
  end
  else ShowMessage('Seleccione un empleado');
@@ -1111,13 +1225,65 @@ begin
 end;
 
 //Abre la forma de la presentacion de la empresa
+procedure TMainForm.TabItem2Click(Sender: TObject);
+var
+Fecha:String;
+begin
+  Hoy:=Now;
+  //Establece la fecha de hoy en los buscadores de fecha
+  Fecha:=(formatdatetime('d/m/y', Hoy));
+  FechaTrabajos.Date:=Hoy;
+end;
+
+procedure TMainForm.TabItem3Click(Sender: TObject);
+var
+Fecha:String;
+begin
+  Hoy:=Now;
+  //Establece la fecha de hoy en los buscadores de fecha
+  Fecha:=(formatdatetime('d/m/y', Hoy));
+  FechaLista.Date:=Hoy;
+end;
+
 procedure TMainForm.TimerPresentacionTimer(Sender: TObject);
 begin
   fPresentacion:=TfPresentacion.Create(nil);
   try
-    fPresentacion.Show;
+     fPresentacion.Show;
   finally
     fPresentacion.Free;
+  end;
+end;
+
+procedure TMainForm.Total_Subtotal;
+VAR
+Total:Double;
+Subtotal:Double;
+begin
+   try
+    with FDQueryBuscar,SQL do
+    begin
+      Active :=  False;
+      Clear;
+      Add('Select Sum(Precio),Descripcion,Cantidad from Reparacion where Empleado=:Empleado and Fecha=:Fecha');
+      Params[0].AsString:=ComboEmpleado.Selected.Text;
+      Params[1].AsString:=(formatdatetime('d/m/y',FechaTrabajos.Date ));
+      close;
+      Open;
+      Total:=Fields[0].AsFloat;
+      Clear;
+      Add('Select Ganancia from Empleado where nombre=:Nombre ');
+      Params[0].AsString:=ComboEmpleado.Selected.Text;
+      close;
+      Open;
+      Subtotal:=(Total*(Fields[0].asInteger/100));
+      ShowMessage(Fields[0].asString);
+      lblTotal.Text:=Total.ToString;
+      lblSubtotal.Text:=Subtotal.ToString
+    end;
+    except
+    on E:Exception do
+    showmessage(E.Message);
   end;
 end;
 

@@ -121,6 +121,7 @@ object Lineas: TLineas
         Touch.InteractiveGestures = [LongTap, DoubleTap]
         Align = Left
         TabOrder = 0
+        KeyboardType = NumberPad
         Position.X = 199.000000000000000000
         Position.Y = 4.000000000000000000
         Size.Width = 169.000000000000000000

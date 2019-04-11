@@ -10,9 +10,6 @@ Coordinates=252,125,58,51
 [NextTabAction1]
 Coordinates=462,175,92,33
 
-[Label4]
-Coordinates=459,186,46,51
-
 [Label1]
 Coordinates=214,186,46,51
 
@@ -30,9 +27,6 @@ Coordinates=329,247,59,33
 
 [btnLinea]
 Coordinates=515,186,57,51
-
-[Label3]
-Coordinates=320,125,46,51
 
 [TabControl1]
 Coordinates=245,247,74,33
@@ -237,4 +231,10 @@ Coordinates=457,334,48,51
 
 [btnReparacion]
 Coordinates=425,10,79,51
+
+[lblSubtotal]
+Coordinates=320,125,46,51
+
+[lblTotal]
+Coordinates=459,186,46,51
 
