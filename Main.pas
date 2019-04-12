@@ -117,6 +117,7 @@ type
     btnRegresar: TImage;
     edtPass1: TEdit;
     edtNewPass: TEdit;
+    Button1: TButton;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure ConexionBeforeConnect(Sender: TObject);
@@ -129,6 +130,7 @@ type
     procedure ObtenerEmpleadosTrabajo;
     //Trabajo/Ganancia
     procedure Total_Subtotal;
+    procedure Borrar_Trabajo;
     //Lista
     procedure ObtenerLista;
     procedure ObtenerEmpleadosLista;
@@ -194,6 +196,34 @@ uses
 
 {$R *.fmx}
 {$R *.LgXhdpiTb.fmx ANDROID}
+
+procedure TMainForm.Borrar_Trabajo;
+begin
+  try
+    with FDQueryBuscar,SQL do
+    begin
+      Active:=False;
+      clear;
+      if FDMemTrabajos.FieldByName('Folio').AsString.Equals('') then
+      begin
+        Add('DELETE ');
+        Add('FROM Reparacion ' );
+        Add('WHERE Descripcion='+FDMemTrabajos.FieldByName('Descripcion').AsString+' and Precio='+FDMemTrabajos.FieldByName('Precio').AsString);
+      end
+      else
+      begin
+        Add('DELETE ');
+        Add('FROM Reparacion ' );
+        Add('WHERE Folio='+FDMemTrabajos.FieldByName('Folio').AsString+' and Precio='+FDMemTrabajos.FieldByName('Precio').AsString);
+      end;
+      FDQueryBuscar.ExecSQL();
+      FDMemTrabajos.Delete;
+    end;
+    except
+    on E:Exception do
+    showmessage(E.Message);
+  end;
+end;
 
 procedure TMainForm.btnAcceptClick(Sender: TObject);
 begin
@@ -348,12 +378,8 @@ end;
 
 procedure TMainForm.Button1Click(Sender: TObject);
 begin
-  //ShowMessage(Date2Str(myDate));
-  // use dt as needed...
-   ObtenerTipoTrabajo;
-  //ShowMessage(Nombre_Dia(MyDate));
-  //ShowMessage(StrFecha(StrToDate(MyDate)));
-  //ShowMessage(System.SysUtils.FormatSettings.LongMonthNames[1]);
+  Borrar_Trabajo;
+  Total_Subtotal;
 end;
 
 procedure TMainForm.ComboBoxLineaChange(Sender: TObject);
@@ -1277,13 +1303,12 @@ begin
       close;
       Open;
       Subtotal:=(Total*(Fields[0].asInteger/100));
-      ShowMessage(Fields[0].asString);
       lblTotal.Text:=Total.ToString;
       lblSubtotal.Text:=Subtotal.ToString
     end;
     except
     on E:Exception do
-    showmessage(E.Message);
+    //showmessage(E.Message);
   end;
 end;
 
