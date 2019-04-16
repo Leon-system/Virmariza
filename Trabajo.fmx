@@ -48,7 +48,7 @@ object Reparacion: TReparacion
       TabOrder = 0
       KeyboardType = DecimalNumberPad
       Position.Y = 4.000000000000000000
-      Size.Width = 281.000000000000000000
+      Size.Width = 145.000000000000000000
       Size.Height = 32.000000000000000000
       Size.PlatformDefault = False
       TextPrompt = 'Limite por dia'
@@ -58,10 +58,21 @@ object Reparacion: TReparacion
       Align = Center
       TabOrder = 1
       KeyboardType = DecimalNumberPad
-      Size.Width = 254.000000000000000000
+      Size.Width = 156.000000000000000000
       Size.Height = 32.000000000000000000
       Size.PlatformDefault = False
       TextPrompt = 'Tiempo de espera'
+    end
+    object edtSeparacion: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Align = Right
+      TabOrder = 2
+      Text = '1'
+      Position.X = 440.000000000000000000
+      Position.Y = 4.000000000000000000
+      Size.Width = 191.000000000000000000
+      Size.Height = 32.000000000000000000
+      Size.PlatformDefault = False
     end
   end
   object Layout4: TLayout

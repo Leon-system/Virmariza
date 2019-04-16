@@ -24,6 +24,7 @@ type
     Label1: TLabel;
     Line1: TLine;
     ToolBar1: TToolBar;
+    edtSeparacion: TEdit;
     procedure BtnGuardarTrabajoClick(Sender: TObject);
     procedure InsertarTrabajo;
     procedure BuscarTrabajo;
@@ -57,13 +58,14 @@ begin
     begin
       Clear;
       Add('UPDATE Trabajo');
-      Add('SET Trabajo=:Trabajo,Informacion=:Informacion,Tiempo=:Tiempo,Limite=:Limite');
+      Add('SET Trabajo=:Trabajo,Informacion=:Informacion,Tiempo=:Tiempo,Limite=:Limite,Separacion=:Separacion');
       Add('Where Trabajo=:TrabajoOriginal');
       Params[0].AsString:=edtTrabajo.Text;
       Params[1].AsString:=edtInfo.Text;
       Params[2].AsInteger:=edtTiempo.Text.ToInteger;
       Params[3].AsInteger:=edtLimite.Text.ToInteger;
-      Params[4].AsString:=ComboTrabajo.Selected.Text;
+      Params[4].AsInteger:=edtSeparacion.Text.ToInteger;
+      Params[5].AsString:=ComboTrabajo.Selected.Text;
       MainForm.FDQueryInsertar.ExecSQL;
       ToastImagen('Trabajo editado',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
     end;
@@ -111,7 +113,6 @@ begin
               ComboTrabajo.Clear;
               BuscarTrabajo;
               MainForm.ObtenerTipoTrabajo;
-
             end;
           end;
           mrNo:
@@ -142,8 +143,8 @@ end;
 
 procedure TReparacion.BtnGuardarTrabajoClick(Sender: TObject);
 begin
-  if EdtTrabajo.Text.Equals('') or Edtinfo.Text.Equals('') or Edtlimite.Text.Equals('') or edtTiempo.Text.Equals('')
-  then ShowMessage('Ingrese nombre,información,limite de trabajo por dia  y tiempo de espera ')
+  if EdtTrabajo.Text.Equals('') or Edtinfo.Text.Equals('') or Edtlimite.Text.Equals('') or edtTiempo.Text.Equals('')  or edtSeparacion.Text.Equals('')
+  then ShowMessage('Ingrese nombre,información,limite de trabajo por dia,tiempo de espera y cantidad de dias de separacion entre un dia y otro ')
   else
   begin
     InsertarTrabajo;
@@ -204,12 +205,13 @@ begin
     with MainForm.FDQueryInsertar,SQL do
     begin
       Clear;
-      Add('insert into Trabajo (Trabajo,Informacion,Tiempo,Limite)');
-      Add('values (:Trabajo,:Informacion,:Tiempo,:Limite)');
+      Add('insert into Trabajo (Trabajo,Informacion,Tiempo,Limite,Separacion)');
+      Add('values (:Trabajo,:Informacion,:Tiempo,:Limite,:Separacion)');
       Params[0].AsString:=EdtTrabajo.Text;
       Params[1].AsString:=EdtInfo.Text;
       Params[2].AsString:=edtTiempo.Text;
       Params[3].AsString:=edtLimite.Text;
+      Params[4].AsString:=edtSeparacion.Text;
       MainForm.FDQueryInsertar.ExecSQL;
       EdtTrabajo.Text:='';
       EdtInfo.Text:='';
