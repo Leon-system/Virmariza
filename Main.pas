@@ -118,6 +118,9 @@ type
     edtPass1: TEdit;
     edtNewPass: TEdit;
     Button1: TButton;
+    Button2: TButton;
+    btnConfAv: TSpeedButton;
+    Button3: TButton;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure ConexionBeforeConnect(Sender: TObject);
@@ -144,6 +147,7 @@ type
     function LimiteR:Boolean;
     procedure ComboBoxLineaChange(Sender: TObject);
     //Otro
+    procedure CargaConfiguracion;
     procedure TimerPresentacionTimer(Sender: TObject);
     procedure StringGrid2CellClick(const Column: TColumn; const Row: Integer);
     procedure SpeedButton2Click(Sender: TObject);
@@ -172,6 +176,10 @@ type
     procedure TabItem2Click(Sender: TObject);
     procedure TabItem3Click(Sender: TObject);
     procedure LimpiarDatos;
+    procedure Button2Click(Sender: TObject);
+    procedure btnConfAvClick(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure btnRegresarClick(Sender: TObject);
   private
    Hoy :TDateTime;
    ComboEmpSelected:Boolean;
@@ -180,10 +188,12 @@ type
    CantidadLimite:Integer;
    Separacion:Integer;
    Tiempo:Integer;
+   Dias_Eliminar:Integer;
+   C_Articulos,C_Empleados,C_Reparacion:Integer;
     { Private declarations }
   public
   IDROW_SELECCIONADO:string;
-  Linea,Art,Repa:Boolean;
+  Avan,Linea,Art,Repa:Boolean;
   S:String;//La cantidad que regresa
     { Public declarations }
   end;
@@ -194,7 +204,7 @@ var
 implementation
 
 uses
-  Linea, Articulos, Presentacion, Funciones_Android, Trabajo;
+  Linea, Articulos, Presentacion, Funciones_Android, Trabajo, Avanzada;
 
 {$R *.fmx}
 {$R *.LgXhdpiTb.fmx ANDROID}
@@ -231,6 +241,7 @@ procedure TMainForm.btnAcceptClick(Sender: TObject);
 begin
   if ContraseñaCorrecta then
   begin
+    edtpass.Text:='';
     if Art then
     begin
       Farticulos:=TFarticulos.Create(nil);
@@ -267,18 +278,44 @@ begin
         Reparacion.Free;
       end;
     end
+    else if Avan then
+    begin
+      fAvanzada:=TfAvanzada.Create(nil);
+      try
+        fAvanzada.Show;
+        mensaje.Visible:=false;
+        FondoOscuro.Visible:=False;
+        OcultarTeclado;
+      finally
+        fAvanzada.Free;
+      end;
+    end
   end
   else ShowMessage('Contraseña incorrecta');
 end;
 
 procedure TMainForm.btnArticulosClick(Sender: TObject);
 begin
-  Art:=True;
-  Repa:=False;
-  Linea:=False;
-  FondoOscuro.Visible:=True;
-  Mensaje.Visible:=True;
-  Edtpass.SetFocus;
+  if C_Articulos.ToBoolean then
+  begin
+    Art:=True;
+    Repa:=False;
+    Linea:=False;
+    Avan:=False;
+    FondoOscuro.Visible:=True;
+    Mensaje.Visible:=True;
+    Edtpass.SetFocus;
+  end
+  else
+  begin
+      Farticulos:=TFarticulos.Create(nil);
+      try
+        Farticulos.Show;
+      finally
+        Farticulos.Free;
+      end;
+  end
+ 
 end;
 
 procedure TMainForm.btnBackClick(Sender: TObject);
@@ -319,14 +356,46 @@ begin
   else ShowMessage('La contraseña original es incorrecta');
 end;
 
-procedure TMainForm.btnReparacionClick(Sender: TObject);
+procedure TMainForm.btnConfAvClick(Sender: TObject);
 begin
   Art:=False;
-  Repa:=True;
+  Repa:=False;
   Linea:=False;
+  Avan:=True;
   FondoOscuro.Visible:=True;
   Mensaje.Visible:=True;
   Edtpass.SetFocus;
+end;
+
+procedure TMainForm.btnRegresarClick(Sender: TObject);
+begin
+   mensaje.Visible:=false;
+   FondoOscuro.Visible:=False;
+   OcultarTeclado;
+end;
+
+procedure TMainForm.btnReparacionClick(Sender: TObject);
+begin
+   if C_Reparacion.ToBoolean then
+  begin
+    Art:=False;
+    Repa:=True;
+    Linea:=False;
+    Avan:=False;
+    FondoOscuro.Visible:=True;
+    Mensaje.Visible:=True;
+    Edtpass.SetFocus;
+  end
+  else
+  begin
+    Reparacion:=TReparacion.Create(nil);
+    try
+      Reparacion.Show;
+    finally
+      Reparacion.Free;
+    end;
+  end
+
 end;
 
 procedure TMainForm.btnIngresarClick(Sender: TObject);
@@ -344,12 +413,25 @@ end;
 
 procedure TMainForm.btnLineaClick(Sender: TObject);
 begin
-  Art:=False;
-  Repa:=False;
-  Linea:=True;
-  FondoOscuro.Visible:=True;
-  Mensaje.Visible:=True;
-  Edtpass.SetFocus;
+  if C_Empleados.ToBoolean then
+  begin
+    Art:=False;
+    Repa:=False;
+    Linea:=True;
+    Avan:=False;
+    FondoOscuro.Visible:=True;
+    Mensaje.Visible:=True;
+    Edtpass.SetFocus;
+  end
+  else
+  begin
+    Lineas:=TLineas.Create(nil);
+    try
+      Lineas.Show;
+    finally
+      Lineas.Free;
+    end;
+    end
 end;
 
 procedure TMainForm.BuscarLista;
@@ -392,6 +474,53 @@ begin
       mrNo:
     end;
   end);
+end;
+
+procedure TMainForm.Button2Click(Sender: TObject);
+begin
+  Art:=True;
+  Repa:=False;
+  Linea:=False;
+  Avan:=False;
+  FondoOscuro.Visible:=True;
+  Mensaje.Visible:=True;
+  Edtpass.SetFocus;
+end;
+
+procedure TMainForm.Button3Click(Sender: TObject);
+begin
+  ShowMessage(Dias_eliminar.ToString+'  '+c_Empleados.ToString+'  '+C_Articulos.ToString+'  '+C_Reparacion.ToString);
+end;
+
+procedure TMainForm.CargaConfiguracion;
+begin
+  try
+    with FDQueryBuscar,SQL do
+    begin
+      Active :=  False;
+      Clear;
+      Add('SELECT Dias_Eliminar,C_Articulos,C_Empleados,C_Reparacion ');
+      Add('FROM Configuracion ');
+      Close;
+      Open;
+     if Fields[0].AsString.Equals('') then
+      begin
+        Clear;
+        Add('INSERT into Configuracion ');
+        Add('(Dias_Eliminar,C_Articulos,C_Empleados,C_Reparacion) ');
+        Add('values (365,1,1,1) ');
+        ExecSQL;
+        CargaConfiguracion;
+      end;
+      Dias_Eliminar:=Fields[0].AsInteger;
+      C_Articulos:=Fields[1].AsInteger;
+      C_Empleados:= Fields[2].AsInteger;
+      C_Reparacion:= Fields[3].AsInteger;
+      end;
+    except
+    on E:exception do
+    showmessage(e.Message);
+  end;
 end;
 
 procedure TMainForm.ComboBoxLineaChange(Sender: TObject);
@@ -463,7 +592,6 @@ begin
       Close;
       Open;
       if Fields[0].AsString.Equals(edtpass1.Text) then result:=true else result:=false;
-      ShowMessage(Fields[0].AsString);
     end;
     except
     on E:exception do
@@ -587,7 +715,6 @@ begin
         Close;
         Open;
         FReal:=FechaReal(Fields[0].AsString);
-        ShowMessage(Nombre_Dia(FReal));
         if Nombre_Dia(FReal).Equals('Domingo') then
         begin
           Clear;
@@ -634,11 +761,13 @@ begin
   ObtenerEmpleadosLista;
   ObtenerEmpleadosTrabajo;
   InsertarPass;
+  CargaConfiguracion;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  ObtenerTipoTrabajo
+  ObtenerTipoTrabajo;
+  LimpiarDatos;
 end;
 
 procedure TMainForm.GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
@@ -874,7 +1003,7 @@ begin
     end;
     except
     on E:Exception do
-    showmessage(E.Message);
+    //showmessage(E.Message);
   end;
 end;
 
@@ -980,7 +1109,7 @@ begin
    try
     with MainForm.FDQueryBuscar,SQL do
     begin
-      ComboEmpleado.Clear;
+      ComboEmpleadosLista.Clear;
       Active :=  False;
       Clear;
       Add('Select Nombre From Empleado');
@@ -1182,6 +1311,7 @@ begin
       Open;
       while not Eof do
       begin
+        ShowMessage(Fields[0].AsString+Fields[1].AsString+Fields[2].AsString+Fields[3].AsString);
         FDMemTrabajos.Append;
         (FDMemTrabajos.FieldByName('Folio') as TIntegerField).AsInteger:= Fields[0].AsInteger;
         (FDMemTrabajos.FieldByName('Precio') as TStringField).AsString:= Fields[1].AsString;

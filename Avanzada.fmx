@@ -1,0 +1,111 @@
+object FAvanzada: TFAvanzada
+  Left = 0
+  Top = 0
+  Caption = 'Form1'
+  ClientHeight = 399
+  ClientWidth = 679
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 3
+  object Layout1: TLayout
+    Align = Top
+    Size.Width = 679.000000000000000000
+    Size.Height = 50.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object lbl1: TLabel
+      Align = Left
+      Size.Width = 249.000000000000000000
+      Size.Height = 50.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Dias para guardar registros'
+      TabOrder = 0
+    end
+    object EdtDias: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Align = Right
+      TabOrder = 1
+      Text = '365'
+      Position.X = 336.000000000000000000
+      Position.Y = 9.000000000000000000
+      Size.Width = 343.000000000000000000
+      Size.Height = 32.000000000000000000
+      Size.PlatformDefault = False
+    end
+  end
+  object Layout2: TLayout
+    Align = Top
+    Position.Y = 50.000000000000000000
+    Size.Width = 679.000000000000000000
+    Size.Height = 199.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object Label1: TLabel
+      Align = MostTop
+      Size.Width = 679.000000000000000000
+      Size.Height = 43.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Pedir contrase'#241'a:'
+      TabOrder = 0
+    end
+    object Layout3: TLayout
+      Align = Top
+      Position.Y = 43.000000000000000000
+      Size.Width = 679.000000000000000000
+      Size.Height = 50.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      object CheckArt: TCheckBox
+        Align = Client
+        Size.Width = 679.000000000000000000
+        Size.Height = 50.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Text = 'Art'#237'culos'
+      end
+    end
+    object Layout4: TLayout
+      Align = Top
+      Position.Y = 93.000000000000000000
+      Size.Width = 679.000000000000000000
+      Size.Height = 50.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      object CheckLyE: TCheckBox
+        Align = Client
+        Size.Width = 679.000000000000000000
+        Size.Height = 50.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Text = 'Lineas y empleados'
+      end
+    end
+    object Layout5: TLayout
+      Align = Top
+      Position.Y = 143.000000000000000000
+      Size.Width = 679.000000000000000000
+      Size.Height = 50.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+      object CheckRep: TCheckBox
+        Align = Client
+        Size.Width = 679.000000000000000000
+        Size.Height = 50.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Text = 'Reparaci'#243'n'
+      end
+    end
+  end
+  object btnGuardar: TButton
+    Align = Bottom
+    Position.Y = 355.000000000000000000
+    Size.Width = 679.000000000000000000
+    Size.Height = 44.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    Text = 'Guardar configuraci'#243'n'
+    OnClick = btnGuardarClick
+  end
+end

@@ -302,6 +302,7 @@ begin
   begin
     InsertarEmpleado;
   end;
+
   MainForm.ObtenerEmpleadosLista;
   MainForm.ObtenerEmpleadosTrabajo;
 end;

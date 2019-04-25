@@ -43,7 +43,8 @@ uses
   FGX.VirtualKeyboard.Types in 'Librerias_Android\FGX.VirtualKeyboard.Types.pas',
   Presentacion in 'Presentacion.pas' {fPresentacion},
   Funciones_Android in 'Funciones_Android.pas',
-  Trabajo in 'Trabajo.pas' {Reparacion};
+  Trabajo in 'Trabajo.pas' {Reparacion},
+  Avanzada in 'Avanzada.pas' {FAvanzada};
 
 {$R *.res}
 
@@ -54,5 +55,6 @@ begin
   Application.CreateForm(TLineas, Lineas);
   Application.CreateForm(TfPresentacion, fPresentacion);
   Application.CreateForm(TReparacion, Reparacion);
+  Application.CreateForm(TFAvanzada, FAvanzada);
   Application.Run;
 end.
