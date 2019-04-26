@@ -65,7 +65,7 @@ implementation
 
 {$R *.fmx}
 
-uses Main, FGX.Toasts, FGX.Toasts.Android;
+uses Main, FGX.Toasts, FGX.Toasts.Android, Funciones_Android;
 
 procedure TfArticulos.ActualizarArticulo;
 var
@@ -249,7 +249,6 @@ end;
 procedure TfArticulos.InsertarArticulo;
 var
 Nombre:string;
-Toast: TfgToast;
 begin
     try
     with MainForm.FDQueryInsertar,SQL do
@@ -265,15 +264,12 @@ begin
         Add('Insert into articulo (Nombre,Linea,Cantidad,Costo,Publico,Mayoreo,Bolero,Especial,P_Publico,P_Mayoreo,P_Bolero,P_Especial) ');
         Add('Values ('+''''+EditNombre.Text+''''+','+''''+ComboBoxLinea.Selected.Text+''''+','+''''+EditCantidad.Text+''''+','+''''+EditCosto.Text+''''+','+''''+EditPrecio.Text+''''+','+''''+EditPrecioMayoreo.Text+''''+','+''''+EditBolero.text+''''+','+''''+EditPrecioEspecial.text+''''+','+Prcje_Publico.ToString+','+Prcje_Mayoreo.ToString+','+Prcje_Bolero.ToString+','+Prcje_Especial.ToString+')');
         MainForm.FDQueryInsertar.ExecSQL;
-        Toast := TfgToast.Create('Articulo insertado correctamente ', TfgToastDuration(Long));
-        Toast.MessageColor := $FFFFFFFF;
-        Toast.BackgroundColor := $8A000000 ;
-        Toast.Show;
-        Toast.Free;
+        ToastImagen('Artículo insertado exitosamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
+        //Limpiar;
       end
       else
       begin
-             MessageDlg('Ya existe un articulo con el mismo nombre ¿Desea insertarlo? ', System.UITypes.TMsgDlgType.mtInformation,
+        MessageDlg('Ya existe un articulo con el mismo nombre ¿Desea insertarlo? ', System.UITypes.TMsgDlgType.mtInformation,
         [System.UITypes.TMsgDlgBtn.mbOK,System.UITypes.TMsgDlgBtn.mbNo], 0, procedure(const AResult: System.UITypes.TModalResult)
         begin
           case AResult of
@@ -283,11 +279,8 @@ begin
               Add('Insert into articulo (Nombre,Linea,Cantidad,Costo,Publico,Mayoreo,Bolero,Especial,P_Publico,P_Mayoreo,P_Bolero,P_Especial) ');
               Add('Values ('+''''+EditNombre.Text+''''+','+''''+ComboBoxLinea.Selected.Text+''''+','+''''+EditCantidad.Text+''''+','+''''+EditCosto.Text+''''+','+''''+EditPrecio.Text+''''+','+''''+EditPrecioMayoreo.Text+''''+','+''''+EditBolero.text+''''+','+''''+EditPrecioEspecial.text+''''+','+Prcje_Publico.ToString+','+Prcje_Mayoreo.ToString+','+Prcje_Bolero.ToString+','+Prcje_Especial.ToString+')');
               MainForm.FDQueryInsertar.ExecSQL;
-              Toast := TfgToast.Create('Articulo insertado correctamente ', TfgToastDuration(Long));
-              Toast.MessageColor := $FFFFFFFF;
-              Toast.BackgroundColor := $8A000000 ;
-              Toast.Show;
-              Toast.Free;
+              ToastImagen('Artículo insertado exitosamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
+             // Limpiar;
             end;
             mrNo:
           end;

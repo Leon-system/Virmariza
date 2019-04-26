@@ -162,13 +162,20 @@ begin
 end;
 
 (**********************************************************************)
-{El proceso requiere de 5 strings y 4 tiempos, el primer string es el titulo del mensaje y sera visible hasta que se termine
-todo el proceso, los 4 restantes son cada uno un mensaje diferente seguidos de su tiempo de duracion en milisegundos,
-Para ejecutar uno o mas procesos de fondo hasta ahora la unica forma que encontre fue que el proceso de fondo se ejecute
-con un timer pasado x tiempo para que coincida con algun mensaje,Pero lo primero que se debe ejecutar es la animacion.}
-procedure AnimacionProgreso(Titulo: string ;msg1:String;Tiempo1:Integer;msg2:String;Tiempo2:Integer;msg3:String;Tiempo3:Integer;msg4:String;Tiempo4:Integer;msg5:String;Tiempo5:Integer);
+//ESTE PROCESO NO DEBE LLAMARSE, ES SOLO UN EJEMPLO DE COMO SE USA
+{Este procedimiento muestra una animacion de carga, util para procesos pesados que requieran de tiempo para terminar pues
+bloquea la app mientras se esta realizando el proceso
+1 Se deben tener instalados en el IDE las librerias de FGX-FireMonkey-master
+2 Agregar su respectiva libreria de la carpeta Librerias_Android
+* FGX.ProgressDialog.Android.pas
+* FGX.ProgressDialog.pas
+* FGX.ProgressDialog.Types.pas
+3 En la unidad que se usara la animacion en la seccion interface agregar: FGX.ProgressDialog y agregar la unidad progman
+4 Copiar el proceso que esta abajo en la parte donde se desea utilizar
+}
+procedure AnimacionProgreso;
 begin
-   fgActivityDialog:=TfgActivityDialog.Create(nil);
+   fgActivityDialog:=TfgActivityDialog.Create(nil);  // Crea el Hilo
   if not fgActivityDialog.IsShown then
   begin
     FActivityDialogThread := TThread.CreateAnonymousThread(procedure
@@ -176,44 +183,11 @@ begin
       try
         TThread.Synchronize(nil, procedure
         begin
-          fgActivityDialog.Title := Titulo;
-          fgActivityDialog.Message := msg1;
+          fgActivityDialog.Title :='Titulo de la animacion'; //Aqui va el titulo del mensaje
+          fgActivityDialog.Message := 'Mensaje'; //Aqui va el mensaje
           fgActivityDialog.Show;
         end);
-        Sleep(Tiempo1);
-        if TThread.CheckTerminated then
-        Exit;
-
-        TThread.Synchronize(nil, procedure
-        begin
-          fgActivityDialog.Message :=msg2;
-        end);
-        Sleep(Tiempo2);
-        if TThread.CheckTerminated then
-        Exit;
-
-        TThread.Synchronize(nil, procedure
-        begin
-          fgActivityDialog.Message := msg3;
-        end);
-        Sleep(Tiempo3);
-        if TThread.CheckTerminated then
-        Exit;
-
-        TThread.Synchronize(nil, procedure
-        begin
-          fgActivityDialog.Message := msg4;
-        end);
-        Sleep(Tiempo4);
-        if TThread.CheckTerminated then
-        Exit;
-
-        TThread.Synchronize(nil, procedure
-        begin
-          fgActivityDialog.Message := msg5;
-        end);
-        Sleep(Tiempo5);
-
+        Sleep(500);{Aqui va un tiempo de espera  y/o lo mas importante, el proceso que se desea realizar de fondo}
         if TThread.CheckTerminated then
         Exit;
         finally
@@ -221,6 +195,7 @@ begin
         TThread.Synchronize(nil, procedure
         begin
           fgActivityDialog.Hide;
+          //Aqui se agrega lo que se desee realizar una vez que la animacion/Proceso termine
         end);
       end;
     end);

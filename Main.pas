@@ -16,7 +16,7 @@ uses
   System.Bindings.Outputs, Fmx.Bind.Editors, Data.Bind.Components,
   Data.Bind.DBScope, Data.Bind.Grid, FMX.DateTimeCtrls, FMX.ListView.Types,
   FMX.ListView.Appearances, FMX.ListView.Adapters.Base, FMX.ListView,
-  FMX.Objects,System.IOUtils;
+  FMX.Objects,System.IOUtils,FGX.ProgressDialog;
 
 type
   TMainForm = class(TForm)
@@ -121,6 +121,7 @@ type
     Button2: TButton;
     btnConfAv: TSpeedButton;
     Button3: TButton;
+    lbl1: TLabel;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure ConexionBeforeConnect(Sender: TObject);
@@ -190,6 +191,7 @@ type
    Tiempo:Integer;
    Dias_Eliminar:Integer;
    C_Articulos,C_Empleados,C_Reparacion:Integer;
+   Editando:Boolean;
     { Private declarations }
   public
   IDROW_SELECCIONADO:string;
@@ -250,6 +252,11 @@ begin
         mensaje.Visible:=false;
         FondoOscuro.Visible:=False;
         OcultarTeclado;
+        if Editando then
+        Begin
+          Farticulos.editId.Text:=FDMemART.FieldByName('ID').AsString;
+          fArticulos.BuscarArticulo;
+        End;
       finally
         Farticulos.Free;
       end;
@@ -296,6 +303,7 @@ end;
 
 procedure TMainForm.btnArticulosClick(Sender: TObject);
 begin
+  Editando:=False;
   if C_Articulos.ToBoolean then
   begin
     Art:=True;
@@ -308,14 +316,13 @@ begin
   end
   else
   begin
-      Farticulos:=TFarticulos.Create(nil);
-      try
-        Farticulos.Show;
-      finally
-        Farticulos.Free;
-      end;
+    Farticulos:=TFarticulos.Create(nil);
+    try
+      Farticulos.Show;
+    finally
+      Farticulos.Free;
+    end;
   end
- 
 end;
 
 procedure TMainForm.btnBackClick(Sender: TObject);
@@ -395,7 +402,6 @@ begin
       Reparacion.Free;
     end;
   end
-
 end;
 
 procedure TMainForm.btnIngresarClick(Sender: TObject);
@@ -458,8 +464,6 @@ begin
   end;
 end;
 
-
-
 procedure TMainForm.Button1Click(Sender: TObject);
 begin
   MessageDlg('¿Desea eliminar el registro? ', System.UITypes.TMsgDlgType.mtInformation,
@@ -489,7 +493,38 @@ end;
 
 procedure TMainForm.Button3Click(Sender: TObject);
 begin
-  ShowMessage(Dias_eliminar.ToString+'  '+c_Empleados.ToString+'  '+C_Articulos.ToString+'  '+C_Reparacion.ToString);
+MessageDlg('¿Desea ir a la pantalla de edición del artículo seleccionado? ', System.UITypes.TMsgDlgType.mtInformation,
+    [System.UITypes.TMsgDlgBtn.mbOK,System.UITypes.TMsgDlgBtn.mbNo], 0, procedure(const AResult: System.UITypes.TModalResult)
+    begin
+      case AResult of
+        mrOk:
+        begin
+          Editando:=True;
+           if C_Articulos.ToBoolean then
+          begin
+            Art:=True;
+            Repa:=False;
+            Linea:=False;
+            Avan:=False;
+            FondoOscuro.Visible:=True;
+            Mensaje.Visible:=True;
+            Edtpass.SetFocus;
+          end
+          else
+          begin
+            Farticulos:=TFarticulos.Create(nil);
+            try
+              Farticulos.Show;
+              Farticulos.editId.Text:=FDMemART.FieldByName('ID').AsString;
+              fArticulos.BuscarArticulo;
+            finally
+              Farticulos.Free;
+            end;
+          end;
+        end;
+        mrNo:
+      end;
+    end);
 end;
 
 procedure TMainForm.CargaConfiguracion;
@@ -536,9 +571,12 @@ end;
 
 procedure TMainForm.ComboEmpleadosListaChange(Sender: TObject);
 begin
-  ComboEmpListaSelected:=True;
-  ObtenerLista;
-  DiaInicioEntrega;
+  if FDMemLista.RecordCount>0 then
+  begin
+    ComboEmpListaSelected:=True;
+    ObtenerLista;
+    DiaInicioEntrega;
+  end;
 end;
 
 //Crea las tablas en la inicializacion
@@ -551,6 +589,7 @@ begin
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Trabajo(Trabajo TEXT,Informacion TEXT,Tiempo INTEGER,Limite Integer,Separacion Integer)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Lista(Trabajo TEXT,Empleado TEXT,Cantidad TEXT,Fecha DATE,FechaReal Text)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Seguridad(Pass TEXT)');
+  Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Configuracion(Dias_Eliminar INTEGER,C_Articulos INTEGER,C_Empleados INTEGER,C_Reparacion INTEGER)');
  end;
 //Antes de conectar identifica la base de datos
 procedure TMainForm.ConexionBeforeConnect(Sender: TObject);
@@ -616,6 +655,7 @@ begin
     try
       with FDQueryBuscar,SQL do
       begin
+
         Active :=  False;
         Clear;
         Dias:=('''+'+Tiempo.ToString+' day'') ');
@@ -626,6 +666,7 @@ begin
         Params[1].AsString:=TListViewItem(ListView1.Selected).Text;
         Close;
         Open;
+        ShowMessage(Fields[0].AsString);
         FReal:=FechaReal(Fields[0].AsString);
         if Nombre_Dia(FReal).Equals('Domingo') then
         begin
@@ -669,7 +710,7 @@ begin
       end
       except
       on E:exception do
-      showmessage(e.Message);
+      //showmessage(e.Message);
     end
   end
   else
@@ -734,16 +775,19 @@ begin
       end
       except
       on E:exception do
-      showmessage(e.Message);
+      //showmessage(e.Message);
     end
   end;
 end;
 
 procedure TMainForm.FechaListaChange(Sender: TObject);
 begin
-  if ComboEmpListaSelected then
+  if FDMemLista.RecordCount>0 then
   begin
-   ObtenerLista;
+     if ComboEmpListaSelected then
+    begin
+     ObtenerLista;
+    end;
   end;
 end;
 
@@ -962,6 +1006,7 @@ function TMainForm.LimiteR: Boolean;
 var
 UltimaFecha:string;
 begin
+ Result:=False;
   try
     with FDQueryBuscar,SQL do
     begin
@@ -998,8 +1043,10 @@ begin
       close;
       Open;
       {Compara la cantidad de trabajo de ese dia con el limite x dia}
-      if Fields[0].asInteger >= CantidadLimite then Result:=True else Result:=False;
-      //Cantidad:=Fields[0].AsInteger;
+      if not Fields[0].AsString.Equals('') then
+      begin
+        if Fields[0].asInteger >= CantidadLimite then Result:=True else Result:=False;
+      end;
     end;
     except
     on E:Exception do
@@ -1008,18 +1055,21 @@ begin
 end;
 
 procedure TMainForm.LimpiarDatos;
+var
+Dias:string;
 begin
    try
     with MainForm.FDQueryInsertar,SQL do
     begin
+      Dias:=('''+'+(Dias_Eliminar).ToString+' day'') ');
       Active :=  False;
       Clear;
       Add(' Delete from lista ');
-      Add('where Fecha=(SELECT date(''now'',''-1 day''))');
+      Add('where Fecha=(SELECT date (Fecha,'+Dias+')');
       FDQueryInsertar.ExecSQL;
       Clear;
       Add(' Delete from Reparacion ');
-      Add('where Fecha=(SELECT date(''now'',''-1 day''))');
+      Add('where Fecha=(SELECT date (Fecha,'+Dias+')');
       FDQueryInsertar.ExecSQL;
     end;
     except
@@ -1032,10 +1082,14 @@ Procedure TMainForm.ListView1Change(Sender: TObject);
 begin
   if ComboEmpListaSelected then
   begin
-  {
     BuscarLista;
-    if not S.Equals('') then  }
-     DiaInicioEntrega;
+    if not S.Equals('') then
+    DiaInicioEntrega
+    else
+    begin
+      Empleado.Text:='';
+      Cliente.Text:='';
+    end;
   end
 end;
 
@@ -1069,38 +1123,65 @@ end;
 
 procedure TMainForm.LlenarTabla;
 begin
- try
-    FDMemART.Close;
-    FDMemArT.Open;
-    with FDQueryBuscar,SQL do
+  fgActivityDialog:=TfgActivityDialog.Create(nil);  // Crea el Hilo
+  if not fgActivityDialog.IsShown then
+  begin
+    FActivityDialogThread := TThread.CreateAnonymousThread(procedure
     begin
-      Active :=  False;
-      Clear;
-      Add('Select rowid,Nombre,Cantidad,Costo,Publico,Mayoreo,Bolero,Especial,P_Publico,P_Mayoreo,P_Bolero,P_Especial from Articulo where Linea='+''''+ComboBoxLinea.Selected.Text+'''');
-      close;
-      Open;
-      while not Eof do
-      begin
-        FDMemART.Append;
-        (FDMemART.FieldByName('ID') as TIntegerField).AsInteger:= Fields[0].AsInteger;
-        (FDMemART.FieldByName('Nombre') as TStringField).AsString:= Fields[1].AsString;
-        (FDMemART.FieldByName('Unidad Medida') as TStringField).AsString:= Fields[2].AsString;
-        (FDMemART.FieldByName('Costo') as TStringField).AsString:= Fields[3].AsString;
-        (FDMemART.FieldByName('Precio') as TStringField).AsString:= Fields[4].AsString;
-        (FDMemART.FieldByName('Mayoreo') as TStringField).AsString:= Fields[5].AsString;
-        (FDMemART.FieldByName('Bolero') as TStringField).AsString:= Fields[6].AsString;
-        (FDMemART.FieldByName('Especial') as TStringField).AsString:= Fields[7].AsString;
-        (FDMemART.FieldByName('P_Precio') as TStringField).AsString:= Fields[8].AsString;
-        (FDMemART.FieldByName('P_Mayoreo') as TStringField).AsString:= Fields[9].AsString;
-        (FDMemART.FieldByName('P_Bolero') as TStringField).AsString:= Fields[10].AsString;
-        (FDMemART.FieldByName('P_Especial') as TStringField).AsString:= Fields[11].AsString;
-        FDMemART.Post;
-        Next;
+      try
+        TThread.Synchronize(nil, procedure
+        begin
+          fgActivityDialog.Title :='Cargando'; //Aqui va el titulo del mensaje
+          fgActivityDialog.Message := 'Buscando artículos'; //Aqui va el mensaje
+          fgActivityDialog.Show;
+        end);
+        try
+          FDMemArt.DisableControls;
+          FDMemART.Close;
+          FDMemArT.Open;
+          with FDQueryBuscar,SQL do
+          begin
+            Active :=  False;
+            Clear;
+            Add('Select rowid,Nombre,Cantidad,Costo,Publico,Mayoreo,Bolero,Especial,P_Publico,P_Mayoreo,P_Bolero,P_Especial from Articulo where Linea='+''''+ComboBoxLinea.Selected.Text+'''');
+            close;
+            Open;
+            while not Eof do
+            begin
+              FDMemART.Append;
+              (FDMemART.FieldByName('ID') as TIntegerField).AsInteger:= Fields[0].AsInteger;
+              (FDMemART.FieldByName('Nombre') as TStringField).AsString:= Fields[1].AsString;
+              (FDMemART.FieldByName('Unidad Medida') as TStringField).AsString:= Fields[2].AsString;
+              (FDMemART.FieldByName('Costo') as TStringField).AsString:= Fields[3].AsString;
+              (FDMemART.FieldByName('Precio') as TStringField).AsString:= Fields[4].AsString;
+              (FDMemART.FieldByName('Mayoreo') as TStringField).AsString:= Fields[5].AsString;
+              (FDMemART.FieldByName('Bolero') as TStringField).AsString:= Fields[6].AsString;
+              (FDMemART.FieldByName('Especial') as TStringField).AsString:= Fields[7].AsString;
+              (FDMemART.FieldByName('P_Precio') as TStringField).AsString:= Fields[8].AsString;
+              (FDMemART.FieldByName('P_Mayoreo') as TStringField).AsString:= Fields[9].AsString;
+              (FDMemART.FieldByName('P_Bolero') as TStringField).AsString:= Fields[10].AsString;
+              (FDMemART.FieldByName('P_Especial') as TStringField).AsString:= Fields[11].AsString;
+              FDMemART.Post;
+              Next;
+            end;
+          end;
+        except
+          on E:Exception do
+          showmessage(E.Message);
+        end;
+        if TThread.CheckTerminated then
+        Exit;
+        finally
+        if not TThread.CheckTerminated then
+        TThread.Synchronize(nil, procedure
+        begin
+          fgActivityDialog.Hide;
+          FDMemArt.EnableControls;
+        end);
       end;
-    end;
-    except
-    on E:Exception do
-    showmessage(E.Message);
+    end);
+    FActivityDialogThread.FreeOnTerminate := False;
+    FActivityDialogThread.Start;
   end;
 end;
 //Obtiene las lineas y las agrega en el combobox
@@ -1241,6 +1322,7 @@ Fecha:TDateTime;
 begin
   try
     Fecha:=strtodate(Fechalista.Data.ToString);
+    FDMemFilaTrabajo.DisableControls;
     FDMemFilaTrabajo.Close;
     FDMemFilaTrabajo.Open;
     with FDQueryBuscar,SQL do
@@ -1260,8 +1342,8 @@ begin
         FDMemFilaTrabajo.Post;
         Next;
       end;
-
     end;
+    FDMemFilaTrabajo.EnableControls;
     except
     on E:Exception do
     showmessage(E.Message);
@@ -1298,6 +1380,7 @@ end;
 procedure TMainForm.ObtenerTrabajos;
 begin
   try
+    FDMemTrabajos.DisableControls;
     FDMemTrabajos.Close;
     FDMemTrabajos.Open;
     with FDQueryBuscar,SQL do
@@ -1311,7 +1394,7 @@ begin
       Open;
       while not Eof do
       begin
-        ShowMessage(Fields[0].AsString+Fields[1].AsString+Fields[2].AsString+Fields[3].AsString);
+        //ShowMessage(Fields[0].AsString+Fields[1].AsString+Fields[2].AsString+Fields[3].AsString);
         FDMemTrabajos.Append;
         (FDMemTrabajos.FieldByName('Folio') as TIntegerField).AsInteger:= Fields[0].AsInteger;
         (FDMemTrabajos.FieldByName('Precio') as TStringField).AsString:= Fields[1].AsString;
@@ -1321,6 +1404,7 @@ begin
         Next;
       end;
     end;
+    FDMemTrabajos.EnableControls;
     except
     on E:Exception do
     showmessage(E.Message);
@@ -1330,8 +1414,6 @@ end;
 procedure TMainForm.RestarLista;
 begin
     try
-    FDMemART.Close;
-    FDMemArT.Open;
     with FDQueryInsertar,SQL do
     begin
       Active :=  False;
