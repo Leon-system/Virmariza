@@ -61,6 +61,7 @@ object fArticulos: TfArticulos
     Size.Height = 32.000000000000000000
     Size.PlatformDefault = False
     TextPrompt = 'Nombre'
+    OnKeyDown = EditNombreKeyDown
   end
   object Layout2: TLayout
     Align = Top
@@ -68,7 +69,7 @@ object fArticulos: TfArticulos
     Size.Width = 651.000000000000000000
     Size.Height = 33.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 4
+    TabOrder = 5
     object EditCantidad: TEdit
       Touch.InteractiveGestures = [LongTap, DoubleTap]
       Align = Left
@@ -77,6 +78,7 @@ object fArticulos: TfArticulos
       Size.Height = 32.000000000000000000
       Size.PlatformDefault = False
       TextPrompt = 'Unidad/Cantidad'
+      OnKeyDown = EditCantidadKeyDown
     end
     object EditCosto: TEdit
       Touch.InteractiveGestures = [LongTap, DoubleTap]
@@ -87,6 +89,7 @@ object fArticulos: TfArticulos
       Size.Height = 32.000000000000000000
       Size.PlatformDefault = False
       TextPrompt = 'Costo'
+      OnKeyDown = EditCostoKeyDown
     end
     object EditPrecio: TEdit
       Touch.InteractiveGestures = [LongTap, DoubleTap]
@@ -98,6 +101,7 @@ object fArticulos: TfArticulos
       Size.Height = 32.000000000000000000
       Size.PlatformDefault = False
       TextPrompt = 'Precio al publico'
+      OnKeyDown = EditPrecioKeyDown
     end
   end
   object Layout3: TLayout
@@ -106,7 +110,7 @@ object fArticulos: TfArticulos
     Size.Width = 651.000000000000000000
     Size.Height = 40.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 5
+    TabOrder = 6
     object EditBolero: TEdit
       Touch.InteractiveGestures = [LongTap, DoubleTap]
       Align = Left
@@ -117,6 +121,7 @@ object fArticulos: TfArticulos
       Size.Height = 32.000000000000000000
       Size.PlatformDefault = False
       TextPrompt = 'Precio de bolero'
+      OnKeyDown = EditBoleroKeyDown
     end
     object EditPrecioMayoreo: TEdit
       Touch.InteractiveGestures = [LongTap, DoubleTap]
@@ -127,6 +132,7 @@ object fArticulos: TfArticulos
       Size.Height = 32.000000000000000000
       Size.PlatformDefault = False
       TextPrompt = 'Precio mayoreo'
+      OnKeyDown = EditPrecioMayoreoKeyDown
     end
     object EditPrecioEspecial: TEdit
       Touch.InteractiveGestures = [LongTap, DoubleTap]
@@ -139,15 +145,16 @@ object fArticulos: TfArticulos
       Size.Height = 32.000000000000000000
       Size.PlatformDefault = False
       TextPrompt = 'Precio especial'
+      OnKeyDown = EditPrecioEspecialKeyDown
     end
   end
   object Layout4: TLayout
     Align = Top
-    Position.Y = 226.000000000000000000
+    Position.Y = 257.000000000000000000
     Size.Width = 651.000000000000000000
     Size.Height = 40.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 6
+    TabOrder = 7
     object btnBorrar: TButton
       Align = Left
       Size.Width = 97.000000000000000000
@@ -194,7 +201,7 @@ object fArticulos: TfArticulos
     Size.Width = 651.000000000000000000
     Size.Height = 32.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 7
+    TabOrder = 8
     object ComboBoxLinea: TComboBox
       Align = Right
       Size.Width = 651.000000000000000000
@@ -210,6 +217,44 @@ object fArticulos: TfArticulos
       Size.PlatformDefault = False
       Text = 'Seleccione una linea'
       TabOrder = 1
+    end
+  end
+  object Layout6: TLayout
+    Align = Top
+    Position.Y = 226.000000000000000000
+    Size.Width = 651.000000000000000000
+    Size.Height = 31.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    object EditFlete: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Align = Right
+      TabOrder = 0
+      KeyboardType = DecimalNumberPad
+      Text = '0'
+      Position.X = 496.000000000000000000
+      Size.Width = 155.000000000000000000
+      Size.Height = 32.000000000000000000
+      Size.PlatformDefault = False
+      TextPrompt = 'Flete%'
+      OnKeyDown = EditCostoKeyDown
+    end
+    object chkIva: TCheckBox
+      Align = Left
+      Size.Width = 337.000000000000000000
+      Size.Height = 31.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = 'Agregar I.V.A.'
+    end
+    object Label2: TLabel
+      Align = Right
+      Position.X = 299.000000000000000000
+      Size.Width = 197.000000000000000000
+      Size.Height = 31.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Flete'
+      TabOrder = 2
     end
   end
 end

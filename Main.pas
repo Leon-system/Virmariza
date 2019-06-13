@@ -181,6 +181,10 @@ type
     procedure btnConfAvClick(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure btnRegresarClick(Sender: TObject);
+    procedure EditFolioKeyDown(Sender: TObject; var Key: Word;
+      var KeyChar: Char; Shift: TShiftState);
+    procedure EditPrecioKeyDown(Sender: TObject; var Key: Word;
+      var KeyChar: Char; Shift: TShiftState);
   private
    Hoy :TDateTime;
    ComboEmpSelected:Boolean;
@@ -582,7 +586,7 @@ end;
 //Crea las tablas en la inicializacion
 procedure TMainForm.ConexionAfterConnect(Sender: TObject);
 begin
-  Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS ARTICULO(NOMBRE TEXT NOT NULL,LINEA TEXT NOT NULL,CANTIDAD TEXT NOT NULL,COSTO TEXT,PUBLICO TEXT,MAYOREO TEXT,BOLERO TEXT,ESPECIAL TEXT,P_PUBLICO TEXT,P_MAYOREO TEXT,P_BOLERO TEXT, P_ESPECIAL TEXT)');
+  Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS ARTICULO(NOMBRE TEXT NOT NULL,LINEA TEXT NOT NULL,CANTIDAD TEXT NOT NULL,COSTO TEXT,PUBLICO TEXT,MAYOREO TEXT,BOLERO TEXT,ESPECIAL TEXT,IVA TEXT,FLETE INTEGER)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Linea(Nombre TEXT NOT NULL)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Empleado(Nombre TEXT,Ganancia TEXT)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Reparacion(Empleado TEXT,Folio INTEGER,Precio NUMERIC,Cantidad INTEGER,Descripcion TEXT,Fecha TEXT,Fecha_Hora TEXT)');
@@ -778,6 +782,18 @@ begin
       //showmessage(e.Message);
     end
   end;
+end;
+
+procedure TMainForm.EditFolioKeyDown(Sender: TObject; var Key: Word;
+  var KeyChar: Char; Shift: TShiftState);
+begin
+  if Key = vkReturn then EditPrecio.SetFocus;
+end;
+
+procedure TMainForm.EditPrecioKeyDown(Sender: TObject; var Key: Word;
+  var KeyChar: Char; Shift: TShiftState);
+begin
+  if Key = vkReturn then btnIngresarClick(Nil);
 end;
 
 procedure TMainForm.FechaListaChange(Sender: TObject);
