@@ -21,7 +21,15 @@ type
     CheckLyE: TCheckBox;
     CheckRep: TCheckBox;
     btnGuardar: TButton;
+    Layout6: TLayout;
+    Label2: TLabel;
+    EdtFlete: TEdit;
+    Layout7: TLayout;
+    Label3: TLabel;
+    edtMax: TEdit;
     procedure btnGuardarClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure ObtenerDetalle;
   private
     { Private declarations }
   public
@@ -51,11 +59,13 @@ begin
       Active :=  False;
         Clear;
         Add('Update Configuracion ');
-        Add('set Dias_Eliminar=:Dias_Eliminar ,C_Articulos=:C_Articulos,C_Empleados=:C_Empleados,C_Reparacion=:C_Reparacion');
+        Add('set Dias_Eliminar=:Dias_Eliminar ,C_Articulos=:C_Articulos,C_Empleados=:C_Empleados,C_Reparacion=:C_Reparacion,Flete=:Flete,MaxDia=:MaxDia');
         Params[0].AsString:=edtDias.Text;
         Params[1].AsInteger:=Articulos;
         Params[2].AsInteger:=LyE;
         Params[3].AsInteger:=Reparacion;
+        Params[4].AsInteger:=edtFlete.Text.ToInteger;
+        Params[5].AsInteger:=edtMax.Text.ToInteger;
         ExecSQL;
         ToastImagen('Configuracion guardada correctamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
         MainForm.CargaConfiguracion;
@@ -63,6 +73,35 @@ begin
     except
     on E:exception do
     showmessage(e.Message);
+  end;
+end;
+
+procedure TFAvanzada.FormShow(Sender: TObject);
+begin
+  ObtenerDetalle;
+end;
+
+procedure TFAvanzada.ObtenerDetalle;
+begin
+   try
+    with MainForm.FDQueryBuscar,SQL do
+    begin
+      Active :=  False;
+      Clear;
+      Add('SELECT   Dias_Eliminar,C_Articulos,C_Empleados,C_Reparacion,Flete,MaxDia');
+      Add('FROM Configuracion ');
+      EdtDias.Text:=Fields[0].AsString;
+      if Fields[1].AsInteger=1 then CheckArt.IsChecked:=True;
+      if Fields[2].AsInteger=1 then CheckLyE.IsChecked:=True;
+      if Fields[3].AsInteger=1 then CheckRep.IsChecked:=True;
+      EdtFlete.Text:=Fields[4].AsString;
+      edtMax.Text:=Fields[5].AsString;
+      Close;
+      Open;
+     end;
+  except
+    on E:exception do
+     showmessage(e.Message);
   end;
 end;
 

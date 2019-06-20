@@ -146,6 +146,7 @@ type
     procedure DiaInicioEntrega;
     Function Limite:Boolean;
     function LimiteR:Boolean;
+    function LimiteXDia:Boolean;
     procedure ComboBoxLineaChange(Sender: TObject);
     //Otro
     procedure CargaConfiguracion;
@@ -191,6 +192,7 @@ type
    ComboEmpListaSelected:Boolean;
    CantidadTrabajo:Integer;
    CantidadLimite:Integer;
+   CantidadXDia:Integer;
    Separacion:Integer;
    Tiempo:Integer;
    Dias_Eliminar:Integer;
@@ -198,6 +200,7 @@ type
    Editando:Boolean;
     { Private declarations }
   public
+  Flete:Integer;
   IDROW_SELECCIONADO:string;
   Avan,Linea,Art,Repa:Boolean;
   S:String;//La cantidad que regresa
@@ -538,7 +541,7 @@ begin
     begin
       Active :=  False;
       Clear;
-      Add('SELECT Dias_Eliminar,C_Articulos,C_Empleados,C_Reparacion ');
+      Add('SELECT Dias_Eliminar,C_Articulos,C_Empleados,C_Reparacion,Flete,MaxDia ');
       Add('FROM Configuracion ');
       Close;
       Open;
@@ -546,8 +549,8 @@ begin
       begin
         Clear;
         Add('INSERT into Configuracion ');
-        Add('(Dias_Eliminar,C_Articulos,C_Empleados,C_Reparacion) ');
-        Add('values (365,1,1,1) ');
+        Add('(Dias_Eliminar,C_Articulos,C_Empleados,C_Reparacion,Flete,MaxDia) ');
+        Add('values (365,1,1,1,0,10) ');
         ExecSQL;
         CargaConfiguracion;
       end;
@@ -555,6 +558,8 @@ begin
       C_Articulos:=Fields[1].AsInteger;
       C_Empleados:= Fields[2].AsInteger;
       C_Reparacion:= Fields[3].AsInteger;
+      Flete:= Fields[4].AsInteger;
+      CantidadXDia:=Fields[5].AsInteger;
       end;
     except
     on E:exception do
@@ -586,14 +591,14 @@ end;
 //Crea las tablas en la inicializacion
 procedure TMainForm.ConexionAfterConnect(Sender: TObject);
 begin
-  Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS ARTICULO(NOMBRE TEXT NOT NULL,LINEA TEXT NOT NULL,CANTIDAD TEXT NOT NULL,COSTO TEXT,PUBLICO TEXT,MAYOREO TEXT,BOLERO TEXT,ESPECIAL TEXT,IVA TEXT,FLETE INTEGER)');
+  Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS ARTICULO(NOMBRE TEXT NOT NULL,LINEA TEXT NOT NULL,CANTIDAD TEXT NOT NULL,COSTO TEXT,PUBLICO TEXT,MAYOREO TEXT,BOLERO TEXT,ESPECIAL TEXT,IVA TEXT,FLETE INTEGER,COSTO_REC TEXT)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Linea(Nombre TEXT NOT NULL)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Empleado(Nombre TEXT,Ganancia TEXT)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Reparacion(Empleado TEXT,Folio INTEGER,Precio NUMERIC,Cantidad INTEGER,Descripcion TEXT,Fecha TEXT,Fecha_Hora TEXT)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Trabajo(Trabajo TEXT,Informacion TEXT,Tiempo INTEGER,Limite Integer,Separacion Integer)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Lista(Trabajo TEXT,Empleado TEXT,Cantidad TEXT,Fecha DATE,FechaReal Text)');
   Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Seguridad(Pass TEXT)');
-  Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Configuracion(Dias_Eliminar INTEGER,C_Articulos INTEGER,C_Empleados INTEGER,C_Reparacion INTEGER)');
+  Conexion.ExecSQL('CREATE TABLE IF NOT EXISTS Configuracion(Dias_Eliminar INTEGER,C_Articulos INTEGER,C_Empleados INTEGER,C_Reparacion INTEGER,FLETE INTEGER)');
  end;
 //Antes de conectar identifica la base de datos
 procedure TMainForm.ConexionBeforeConnect(Sender: TObject);
@@ -1009,8 +1014,7 @@ begin
       close;
       Open;
       {Compara la cantidad de trabajo de ese dia con el limite x dia}
-      if Fields[0].asInteger >= CantidadLimite then Result:=True else Result:=False;
-      //Cantidad:=Fields[0].AsInteger;
+      if  Fields[0].asInteger >= CantidadLimite then  Result:=True else Result:=False;;
     end;
     except
     on E:Exception do
@@ -1067,6 +1071,28 @@ begin
     except
     on E:Exception do
     //showmessage(E.Message);
+  end;
+end;
+
+function TMainForm.LimiteXDia: Boolean;
+begin
+  try
+    Result:=True;
+    with FDQueryBuscar,SQL do
+    begin
+      Clear;
+      Add('SELECT count(*)');
+      Add('FROM lista ');
+      Add('WHERE empleado=:Empleado  and Fecha=:Fecha');
+      Params[0].AsString:=ComboEmpleadosLista.Selected.Text;
+      Params[1].AsDate:=FechaLista.Date;
+      close;
+      Open;
+      if  Fields[0].asInteger >= CantidadXDia then  Result:=True else Result:=False;
+    end;
+    except
+    on E:Exception do
+    showmessage(E.Message);
   end;
 end;
 
@@ -1471,8 +1497,28 @@ begin
         end;
       end);
     end
-    else SumarLista;
-    ObtenerLista;
+    else
+    if LimiteXDia then
+    begin
+      MessageDlg('Este día ya alcanzó el limite de trabajos,¿Está seguro de insertarlo igualmente? ', System.UITypes.TMsgDlgType.mtInformation,
+      [System.UITypes.TMsgDlgBtn.mbOK,System.UITypes.TMsgDlgBtn.mbNo], 0, procedure(const AResult: System.UITypes.TModalResult)
+      begin
+        case AResult of
+          mrOk:
+          begin
+            SumarLista;
+            ObtenerLista;
+          end;
+          mrNo:
+        end;
+      end);
+    end
+    else
+    begin
+      SumarLista;
+      ObtenerLista;
+    end;
+
   end;
   ObtenerLista;
  end

@@ -72,6 +72,7 @@ type
   Prcje_Bolero:Double;
   Prcje_Mayoreo:Double;
   Prcje_Especial:Double;
+  Costo:string;
 
     { Private declarations }
   public
@@ -96,7 +97,7 @@ begin
       {Add('Update articulo set Nombre='+''''+EditNombre.Text+''''+',Linea='+''''+ComboBoxLinea.Selected.Text+''''+',Cantidad='+''''+EditCantidad.Text+''''+',Costo='+''''+EditCosto.Text+''''+',Publico='+''''+EditPrecio.Text+'''');
       Add('Mayoreo='+''''+EditPrecioMayoreo.Text+''''',Bolero='+''''+EditBolero.text+''''+',Especial='+''''+EditPrecioEspecial.text+''''+',P_Publico='+Prcje_Publico.ToString+',P_Mayoreo='+Prcje_Mayoreo.ToString+',P_Bolero='+Prcje_Bolero.ToString+',P_Especial='+Prcje_Especial.ToString+')');}
       Add('Update articulo set Nombre=:Nombre,Linea=:Linea,Cantidad=:Cantidad,Publico=:Publico,Mayoreo=:Mayoreo');
-      Add('Bolero=:Bolero,Especial=:Especial,Iva:=Iva,Flete:=Flete');
+      Add('Bolero=:Bolero,Especial=:Especial,Iva:=Iva,Flete:=Flete,Costo_Rec=:Costo_Rec');
       Add('Where rowid='+''''+Editid.Text+'''');
       Params[0].AsString:=EditNombre.Text;
       Params[1].AsString:=ComboBoxLinea.Selected.Text;
@@ -108,6 +109,7 @@ begin
       if chkIva.IsChecked then Params[7].AsInteger:=1
       else Params[7].AsInteger:=0;
       Params[8].AsInteger:=EditFlete.text.ToInteger;
+      Params[9].AsString:=Costo;
       MainForm.FDQueryInsertar.ExecSQL;
       Limpiar;
       ToastImagen('Artículo actualizado correctamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
@@ -208,7 +210,7 @@ begin
     begin
       Active :=  False;
       Clear;
-      Add('select Nombre,Cantidad,Costo,Publico,Bolero,Mayoreo,Especial,Iva,Flete from Articulo where rowid='+''''+Editid.Text+'''');
+      Add('select Nombre,Cantidad,Costo,Publico,Bolero,Mayoreo,Especial,Iva,Flete,Costo_Rec from Articulo where rowid='+''''+Editid.Text+'''');
       //Add('');
       Close;
       Open;
@@ -221,6 +223,7 @@ begin
       EditPrecioEspecial.Text:=Fields[6].AsString;
       if Fields[7].AsInteger=1 then chkIva.IsChecked:=True else chkIva.IsChecked:=False;
       EditFlete.Text:=Fields[8].AsString;
+      lblRecalc.Text:=Fields[8].AsString;
      end;
   except
     on E:exception do
@@ -311,6 +314,7 @@ end;
 procedure TfArticulos.FormShow(Sender: TObject);
 begin
   BuscarLinea;
+  EditFlete.Text:=MainForm.Flete.ToString;
 end;
 
 procedure TfArticulos.InsertarArticulo;
@@ -328,8 +332,8 @@ begin
       if Nombre.Equals('') then
       begin
         Clear;
-        Add('Insert into articulo (Nombre,Linea,Cantidad,Costo,Publico,Mayoreo,Bolero,Especial,IVA,Flete) ');
-        Add('Values (:Nombre,:Linea,:Cantidad,:Costo,:Publico,:Mayoreo,:Bolero,:Especial,:IVA,:Flete)');
+        Add('Insert into articulo (Nombre,Linea,Cantidad,Costo,Publico,Mayoreo,Bolero,Especial,IVA,Flete,Costo_Rec) ');
+        Add('Values (:Nombre,:Linea,:Cantidad,:Costo,:Publico,:Mayoreo,:Bolero,:Especial,:IVA,:Flete,:Costo_Rec)');
         Params[0].AsString:=EditNombre.Text;
         Params[1].AsString:=ComboBoxLinea.Selected.Text;
         Params[2].AsString:=EditCantidad.Text;
@@ -340,6 +344,7 @@ begin
         if chkIva.IsChecked then Params[7].AsInteger:=1
         else Params[7].AsInteger:=0;
         Params[8].AsInteger:=EditFlete.text.ToInteger;
+        Params[9].AsString:=Costo;
         MainForm.FDQueryInsertar.ExecSQL;
         ToastImagen('Artículo insertado exitosamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
       end
@@ -364,6 +369,7 @@ begin
               if chkIva.IsChecked then Params[7].AsInteger:=1
               else Params[7].AsInteger:=0;
               Params[8].AsInteger:=EditFlete.text.ToInteger;
+              Params[9].AsString:=Costo;
               MainForm.FDQueryInsertar.ExecSQL;
               ToastImagen('Artículo insertado exitosamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
             end;
@@ -390,11 +396,12 @@ begin
   EditPrecioEspecial.Text:='';
   EditFlete.Text:='';
   chkIva.IsChecked:=False;
+  EditFlete.Text:=MainForm.Flete.ToString;
 end;
 
 procedure TfArticulos.ObtenerPorcetaje;
 var
-  Costo,Precio,Bolero,Mayoreo,Especial : string;
+  Precio,Bolero,Mayoreo,Especial : string;
 begin
   Costo  := StringReplace(EditCosto.Text, '.',',',
     [rfReplaceAll, rfIgnoreCase]);

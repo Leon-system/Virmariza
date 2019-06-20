@@ -7,13 +7,14 @@ object FAvanzada: TFAvanzada
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
+  OnShow = FormShow
   DesignerMasterStyle = 3
   object Layout1: TLayout
     Align = Top
     Size.Width = 679.000000000000000000
     Size.Height = 50.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 0
+    TabOrder = 2
     object lbl1: TLabel
       Align = Left
       Size.Width = 249.000000000000000000
@@ -36,11 +37,11 @@ object FAvanzada: TFAvanzada
   end
   object Layout2: TLayout
     Align = Top
-    Position.Y = 50.000000000000000000
+    Position.Y = 150.000000000000000000
     Size.Width = 679.000000000000000000
     Size.Height = 199.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 1
+    TabOrder = 3
     object Label1: TLabel
       Align = MostTop
       Size.Width = 679.000000000000000000
@@ -104,8 +105,62 @@ object FAvanzada: TFAvanzada
     Size.Width = 679.000000000000000000
     Size.Height = 44.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 2
+    TabOrder = 4
     Text = 'Guardar configuraci'#243'n'
     OnClick = btnGuardarClick
+  end
+  object Layout6: TLayout
+    Align = Top
+    Position.Y = 100.000000000000000000
+    Size.Width = 679.000000000000000000
+    Size.Height = 50.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object Label2: TLabel
+      Align = Left
+      Size.Width = 249.000000000000000000
+      Size.Height = 50.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Valor por defecto de flete'
+      TabOrder = 0
+    end
+    object EdtFlete: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Align = Right
+      TabOrder = 1
+      Text = '0'
+      Position.X = 336.000000000000000000
+      Position.Y = 9.000000000000000000
+      Size.Width = 343.000000000000000000
+      Size.Height = 32.000000000000000000
+      Size.PlatformDefault = False
+    end
+  end
+  object Layout7: TLayout
+    Align = Top
+    Position.Y = 50.000000000000000000
+    Size.Width = 679.000000000000000000
+    Size.Height = 50.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object Label3: TLabel
+      Align = Left
+      Size.Width = 249.000000000000000000
+      Size.Height = 50.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Trabajos maximo por dia'
+      TabOrder = 0
+    end
+    object edtMax: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      Align = Right
+      TabOrder = 1
+      Text = '10'
+      Position.X = 336.000000000000000000
+      Position.Y = 9.000000000000000000
+      Size.Width = 343.000000000000000000
+      Size.Height = 32.000000000000000000
+      Size.PlatformDefault = False
+    end
   end
 end
