@@ -76,7 +76,7 @@ Coordinates=1432,190,65,33
 Visible=True
 
 []
-Coordinates=132,1,53,51
+Coordinates=760,133,119,33
 Visible=True
 
 [FdMemArtNombre]
@@ -103,20 +103,8 @@ Coordinates=0,0,70,159
 [EditDesc]
 Coordinates=85,125,58,51
 
-[FdMemArtP_Bolero]
-Coordinates=132,78,110,33
-
-[FdMemArtP_Mayoreo]
-Coordinates=760,78,120,33
-
-[FdMemArtP_Precio]
-Coordinates=604,264,109,33
-
 [FdMemArtBolero]
 Coordinates=604,319,97,33
-
-[FdMemArtP_Especial]
-Coordinates=760,133,119,33
 
 [TimerPresentacion]
 Coordinates=604,374,107,33

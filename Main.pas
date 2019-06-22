@@ -63,10 +63,6 @@ type
     FdMemArtMayoreo: TStringField;
     FdMemArtBolero: TStringField;
     FdMemArtEspecial: TStringField;
-    FdMemArtP_Precio: TStringField;
-    FdMemArtP_Mayoreo: TStringField;
-    FdMemArtP_Bolero: TStringField;
-    FdMemArtP_Especial: TStringField;
     TimerPresentacion: TTimer;
     Layout2: TLayout;
     Label5: TLabel;
@@ -118,10 +114,12 @@ type
     edtPass1: TEdit;
     edtNewPass: TEdit;
     Button1: TButton;
-    Button2: TButton;
     btnConfAv: TSpeedButton;
-    Button3: TButton;
-    lbl1: TLabel;
+    lblNombre: TLabel;
+    Layout3: TLayout;
+    lblPrecio: TLabel;
+    lblBolero: TLabel;
+    btnEditar: TImage;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure ConexionBeforeConnect(Sender: TObject);
@@ -178,14 +176,13 @@ type
     procedure TabItem2Click(Sender: TObject);
     procedure TabItem3Click(Sender: TObject);
     procedure LimpiarDatos;
-    procedure Button2Click(Sender: TObject);
     procedure btnConfAvClick(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
     procedure btnRegresarClick(Sender: TObject);
     procedure EditFolioKeyDown(Sender: TObject; var Key: Word;
       var KeyChar: Char; Shift: TShiftState);
     procedure EditPrecioKeyDown(Sender: TObject; var Key: Word;
       var KeyChar: Char; Shift: TShiftState);
+    procedure btnEditarClick(Sender: TObject);
   private
    Hoy :TDateTime;
    ComboEmpSelected:Boolean;
@@ -381,6 +378,42 @@ begin
   Edtpass.SetFocus;
 end;
 
+procedure TMainForm.btnEditarClick(Sender: TObject);
+begin
+   MessageDlg('¿Desea ir a la pantalla de edición del artículo seleccionado? ', System.UITypes.TMsgDlgType.mtInformation,
+    [System.UITypes.TMsgDlgBtn.mbOK,System.UITypes.TMsgDlgBtn.mbNo], 0, procedure(const AResult: System.UITypes.TModalResult)
+    begin
+      case AResult of
+        mrOk:
+        begin
+          Editando:=True;
+           if C_Articulos.ToBoolean then
+          begin
+            Art:=True;
+            Repa:=False;
+            Linea:=False;
+            Avan:=False;
+            FondoOscuro.Visible:=True;
+            Mensaje.Visible:=True;
+            Edtpass.SetFocus;
+          end
+          else
+          begin
+            Farticulos:=TFarticulos.Create(nil);
+            try
+              Farticulos.Show;
+              Farticulos.editId.Text:=FDMemART.FieldByName('ID').AsString;
+              fArticulos.BuscarArticulo;
+            finally
+              Farticulos.Free;
+            end;
+          end;
+        end;
+        mrNo:
+      end;
+    end);
+end;
+
 procedure TMainForm.btnRegresarClick(Sender: TObject);
 begin
    mensaje.Visible:=false;
@@ -487,53 +520,6 @@ begin
   end);
 end;
 
-procedure TMainForm.Button2Click(Sender: TObject);
-begin
-  Art:=True;
-  Repa:=False;
-  Linea:=False;
-  Avan:=False;
-  FondoOscuro.Visible:=True;
-  Mensaje.Visible:=True;
-  Edtpass.SetFocus;
-end;
-
-procedure TMainForm.Button3Click(Sender: TObject);
-begin
-MessageDlg('¿Desea ir a la pantalla de edición del artículo seleccionado? ', System.UITypes.TMsgDlgType.mtInformation,
-    [System.UITypes.TMsgDlgBtn.mbOK,System.UITypes.TMsgDlgBtn.mbNo], 0, procedure(const AResult: System.UITypes.TModalResult)
-    begin
-      case AResult of
-        mrOk:
-        begin
-          Editando:=True;
-           if C_Articulos.ToBoolean then
-          begin
-            Art:=True;
-            Repa:=False;
-            Linea:=False;
-            Avan:=False;
-            FondoOscuro.Visible:=True;
-            Mensaje.Visible:=True;
-            Edtpass.SetFocus;
-          end
-          else
-          begin
-            Farticulos:=TFarticulos.Create(nil);
-            try
-              Farticulos.Show;
-              Farticulos.editId.Text:=FDMemART.FieldByName('ID').AsString;
-              fArticulos.BuscarArticulo;
-            finally
-              Farticulos.Free;
-            end;
-          end;
-        end;
-        mrNo:
-      end;
-    end);
-end;
-
 procedure TMainForm.CargaConfiguracion;
 begin
   try
@@ -570,6 +556,9 @@ end;
 procedure TMainForm.ComboBoxLineaChange(Sender: TObject);
 begin
    LlenarTabla;
+   lblNombre.Text:='';
+   lblPrecio.Text:='';
+   lblBolero.Text:='';
 end;
  procedure TMainForm.ComboEmpleadoChange(Sender: TObject);
 begin
@@ -1185,7 +1174,7 @@ begin
           begin
             Active :=  False;
             Clear;
-            Add('Select rowid,Nombre,Cantidad,Costo,Publico,Mayoreo,Bolero,Especial,P_Publico,P_Mayoreo,P_Bolero,P_Especial from Articulo where Linea='+''''+ComboBoxLinea.Selected.Text+'''');
+            Add('Select rowid,Nombre,Cantidad,Costo,Publico,Mayoreo,Bolero,Especial from Articulo where Linea='+''''+ComboBoxLinea.Selected.Text+'''');
             close;
             Open;
             while not Eof do
@@ -1543,6 +1532,9 @@ procedure TMainForm.StringGrid2CellClick(const Column: TColumn;
   const Row: Integer);
 begin
   IDROW_SELECCIONADO:=FDMemART.FieldByName('ID').AsString;
+  lblNombre.Text:=FDMemART.FieldByName('Nombre').AsString;
+  lblBolero.Text:=FDMemART.FieldByName('Bolero').AsString;
+  lblPrecio.Text:=FDMemART.FieldByName('Precio').AsString;
 end;
 procedure TMainForm.SumarLista;
 begin
