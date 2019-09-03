@@ -37,6 +37,7 @@ type
     Label2: TLabel;
     Label3: TLabel;
     lblRecalc: TLabel;
+    Image1: TImage;
     procedure BtnBuscarClick(Sender: TObject);
     procedure btnBorrarClick(Sender: TObject);
     procedure InsertarArticulo;
@@ -65,6 +66,7 @@ type
       var KeyChar: Char; Shift: TShiftState);
     procedure EditPrecioEspecialKeyDown(Sender: TObject; var Key: Word;
       var KeyChar: Char; Shift: TShiftState);
+    procedure Image1Click(Sender: TObject);
 
   private
   Combo_Seleccionado:Boolean;
@@ -97,7 +99,7 @@ begin
       {Add('Update articulo set Nombre='+''''+EditNombre.Text+''''+',Linea='+''''+ComboBoxLinea.Selected.Text+''''+',Cantidad='+''''+EditCantidad.Text+''''+',Costo='+''''+EditCosto.Text+''''+',Publico='+''''+EditPrecio.Text+'''');
       Add('Mayoreo='+''''+EditPrecioMayoreo.Text+''''',Bolero='+''''+EditBolero.text+''''+',Especial='+''''+EditPrecioEspecial.text+''''+',P_Publico='+Prcje_Publico.ToString+',P_Mayoreo='+Prcje_Mayoreo.ToString+',P_Bolero='+Prcje_Bolero.ToString+',P_Especial='+Prcje_Especial.ToString+')');}
       Add('Update articulo set Nombre=:Nombre,Linea=:Linea,Cantidad=:Cantidad,Publico=:Publico,Mayoreo=:Mayoreo');
-      Add('Bolero=:Bolero,Especial=:Especial,Iva:=Iva,Flete:=Flete,Costo_Rec=:Costo_Rec');
+      Add('Bolero=:Bolero,Especial=:Especial,Iva:=Iva,Flete:=Flete,CostoRec=:CostoRec');
       Add('Where rowid='+''''+Editid.Text+'''');
       Params[0].AsString:=EditNombre.Text;
       Params[1].AsString:=ComboBoxLinea.Selected.Text;
@@ -185,6 +187,7 @@ begin
   BuscarArticulo;
 end;
 procedure TfArticulos.BtnInsertarClick(Sender: TObject);
+
 begin
   if EditNombre.Text.Equals('') or EditCosto.Text.Equals('') or EditPrecio.Text.Equals('') or Combo_Seleccionado.ToString.Equals('False')  then ShowMessage('Para ingresar un articulo se requiere al menos: nombre,cantidad,linea,costo y precio')
   else
@@ -317,12 +320,17 @@ begin
   EditFlete.Text:=MainForm.Flete.ToString;
 end;
 
+procedure TfArticulos.Image1Click(Sender: TObject);
+begin
+  MainForm.Show;
+end;
+
 procedure TfArticulos.InsertarArticulo;
 var
 Nombre:string;
 begin
     try
-    with MainForm.FDQueryInsertar,SQL do
+    with MainForm.FDQueryBuscar,SQL do
     begin
       Clear;
       Add('Select Nombre from articulo where Nombre='+''''+EditNombre.Text+'''');
@@ -330,10 +338,11 @@ begin
       Open;
       Nombre:=(Fields[0].AsString);
       if Nombre.Equals('') then
+      with MainForm.FDQueryInsertar,SQL do
       begin
         Clear;
-        Add('Insert into articulo (Nombre,Linea,Cantidad,Costo,Publico,Mayoreo,Bolero,Especial,IVA,Flete,Costo_Rec) ');
-        Add('Values (:Nombre,:Linea,:Cantidad,:Costo,:Publico,:Mayoreo,:Bolero,:Especial,:IVA,:Flete,:Costo_Rec)');
+        Add('Insert into articulo (Nombre,Linea,Cantidad,Costo,Publico,Mayoreo,Bolero,Especial,IVA,Flete,CostoRec) ');
+        Add('Values (:Nombre,:Linea,:Cantidad,:Costo,:Publico,:Mayoreo,:Bolero,:Especial,:IVA,:Flete,:CostoRec)');
         Params[0].AsString:=EditNombre.Text;
         Params[1].AsString:=ComboBoxLinea.Selected.Text;
         Params[2].AsString:=EditCantidad.Text;
@@ -355,10 +364,11 @@ begin
         begin
           case AResult of
             mrOk:
+            with MainForm.FDQueryInsertar,SQL do
             begin
               Clear;
-              Add('Insert into articulo (Nombre,Linea,Cantidad,Costo,Publico,Mayoreo,Bolero,Especial,IVA,Flete) ');
-              Add('Values (:Nombre,:Linea,:Cantidad,:Costo,:Publico,:Mayoreo,:Bolero,:Especial,:IVA,:Flete)');
+              Add('Insert into articulo (Nombre,Linea,Cantidad,Costo,Publico,Mayoreo,Bolero,Especial,IVA,Flete,CostoRec) ');
+              Add('Values (:Nombre,:Linea,:Cantidad,:Costo,:Publico,:Mayoreo,:Bolero,:Especial,:IVA,:Flete,;CostoRec)');
               Params[0].AsString:=EditNombre.Text;
               Params[1].AsString:=ComboBoxLinea.Selected.Text;
               Params[2].AsString:=EditCantidad.Text;
