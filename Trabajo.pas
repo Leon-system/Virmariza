@@ -23,9 +23,8 @@ type
     ComboTrabajo: TComboBox;
     Label1: TLabel;
     Line1: TLine;
-    edtSeparacion: TEdit;
     ToolBar1: TToolBar;
-    Image1: TImage;
+    edtSeparacion: TEdit;
     procedure BtnGuardarTrabajoClick(Sender: TObject);
     procedure InsertarTrabajo;
     procedure BuscarTrabajo;
@@ -36,7 +35,6 @@ type
     procedure btnActualizarClick(Sender: TObject);
     procedure Limpiar;
     procedure ComboTrabajoChange(Sender: TObject);
-    procedure Image1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -199,11 +197,6 @@ end;
 procedure TReparacion.FormCreate(Sender: TObject);
 begin
   BuscarTrabajo;
-end;
-
-procedure TReparacion.Image1Click(Sender: TObject);
-begin
-    MainForm.Show;
 end;
 
 procedure TReparacion.InsertarTrabajo;

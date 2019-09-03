@@ -5,17 +5,15 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
-  FMX.ListBox, FMX.Layouts, FMX.Edit, FMX.Objects, FMX.Controls.Presentation,
-  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
-  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
-  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client;
+  FMX.ListBox, FMX.Layouts, FMX.Edit, FMX.Objects, FMX.Controls.Presentation;
 
 type
   TfArticulos = class(TForm)
+    ToolBar1: TToolBar;
     Line1: TLine;
     editId: TEdit;
     Layout1: TLayout;
+    BtnBuscar: TButton;
     EditNombre: TEdit;
     ComboBoxLinea: TComboBox;
     Label1: TLabel;
@@ -29,6 +27,7 @@ type
     EditPrecioEspecial: TEdit;
     Layout4: TLayout;
     btnBorrar: TButton;
+    btnActualizar: TButton;
     BtnPorcentaje: TButton;
     BtnInsertar: TButton;
     Layout5: TLayout;
@@ -38,8 +37,6 @@ type
     Label2: TLabel;
     Label3: TLabel;
     lblRecalc: TLabel;
-    ToolBar2: TToolBar;
-    Image1: TImage;
     procedure BtnBuscarClick(Sender: TObject);
     procedure btnBorrarClick(Sender: TObject);
     procedure InsertarArticulo;
@@ -49,7 +46,7 @@ type
     procedure BorrarArticulo;
     procedure ObtenerPorcetaje;
     procedure Limpiar;
-    function Validar:Boolean;
+    procedure btnActualizarClick(Sender: TObject);
     procedure BtnInsertarClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure BtnPorcentajeClick(Sender: TObject);
@@ -68,15 +65,8 @@ type
       var KeyChar: Char; Shift: TShiftState);
     procedure EditPrecioEspecialKeyDown(Sender: TObject; var Key: Word;
       var KeyChar: Char; Shift: TShiftState);
-    procedure btnbackClick(Sender: TObject);
-    procedure Image1Click(Sender: TObject);
-    procedure FormVirtualKeyboardHidden(Sender: TObject;
-      KeyboardVisible: Boolean; const Bounds: TRect);
-    procedure FormVirtualKeyboardShown(Sender: TObject;
-      KeyboardVisible: Boolean; const Bounds: TRect);
 
   private
-  TecladoActivo: Boolean;
   Combo_Seleccionado:Boolean;
   Prcje_Publico:Double;
   Prcje_Bolero:Double;
@@ -99,24 +89,30 @@ implementation
 uses Main, FGX.Toasts, FGX.Toasts.Android, Funciones_Android;
 
 procedure TfArticulos.ActualizarArticulo;
-var
-IVA:Integer;
 begin
-  try
-   if chkIva.IsChecked then IVA:=1
-   else IVA:=0;
+     try
     with MainForm.FDQueryInsertar,SQL do
     begin
       Clear;
-      Add('Update articulo set Nombre='+''''+EditNombre.Text+''''+',Linea='+''''+ComboBoxLinea.Selected.Text+''''+',Cantidad='+''''+EditCantidad.Text+''''+',Costo='+''''+EditCosto.Text+''''+',Publico='+''''+EditPrecio.Text+'''');
-      Add(',Mayoreo='+''''+EditPrecioMayoreo.Text+''''+',Bolero='+''''+EditBolero.text+''''+',Especial='+''''+EditPrecioEspecial.text+'''');
-      Add(',IVA='+IVA.ToString+',Flete='+EditFlete.text+',Costo_Rec='+''''+Costo+'''');
-      Add(' Where rowid='+''''+Editid.Text+'''');
+      {Add('Update articulo set Nombre='+''''+EditNombre.Text+''''+',Linea='+''''+ComboBoxLinea.Selected.Text+''''+',Cantidad='+''''+EditCantidad.Text+''''+',Costo='+''''+EditCosto.Text+''''+',Publico='+''''+EditPrecio.Text+'''');
+      Add('Mayoreo='+''''+EditPrecioMayoreo.Text+''''',Bolero='+''''+EditBolero.text+''''+',Especial='+''''+EditPrecioEspecial.text+''''+',P_Publico='+Prcje_Publico.ToString+',P_Mayoreo='+Prcje_Mayoreo.ToString+',P_Bolero='+Prcje_Bolero.ToString+',P_Especial='+Prcje_Especial.ToString+')');}
+      Add('Update articulo set Nombre=:Nombre,Linea=:Linea,Cantidad=:Cantidad,Publico=:Publico,Mayoreo=:Mayoreo');
+      Add('Bolero=:Bolero,Especial=:Especial,Iva:=Iva,Flete:=Flete,Costo_Rec=:Costo_Rec');
+      Add('Where rowid='+''''+Editid.Text+'''');
+      Params[0].AsString:=EditNombre.Text;
+      Params[1].AsString:=ComboBoxLinea.Selected.Text;
+      Params[2].AsString:=EditCantidad.Text;
+      Params[3].AsString:=EditPrecio.Text;
+      Params[4].AsString:=EditPrecioMayoreo.Text;
+      Params[5].AsString:=EditBolero.text;
+      Params[6].AsString:=EditPrecioEspecial.text;
+      if chkIva.IsChecked then Params[7].AsInteger:=1
+      else Params[7].AsInteger:=0;
+      Params[8].AsInteger:=EditFlete.text.ToInteger;
+      Params[9].AsString:=Costo;
       MainForm.FDQueryInsertar.ExecSQL;
       Limpiar;
       ToastImagen('Artículo actualizado correctamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
-      OcultarTeclado;
-      MainForm.LlenarTabla;
     end;
   except
     on E:exception do
@@ -134,7 +130,6 @@ begin
       MainForm.FDQueryInsertar.ExecSQL;
       Limpiar;
       ToastImagen('Articulo eliminado correctamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
-      MainForm.LlenarTabla;
     end;
   except
     on E:exception do
@@ -142,13 +137,34 @@ begin
   end;
 end;
 
-procedure TfArticulos.btnbackClick(Sender: TObject);
+procedure TfArticulos.btnActualizarClick(Sender: TObject);
 begin
-  MainForm.Show;
+   if editId.Text.Equals('') then ShowMessage('Ingrese el id del artículo a actualizar')
+   else
+   begin
+       MessageDlg('¿Desea actualizar el articulo seleccionado? ', System.UITypes.TMsgDlgType.mtInformation,
+      [System.UITypes.TMsgDlgBtn.mbOK,System.UITypes.TMsgDlgBtn.mbNo], 0, procedure(const AResult: System.UITypes.TModalResult)
+      begin
+        case AResult of
+          mrOk:
+          begin
+            if EditNombre.Text.Equals('') or EditCosto.Text.Equals('') or EditPrecio.Text.Equals('') or Combo_Seleccionado.ToString.Equals('False')  then ShowMessage('Para ingresar un articulo se requiere al menos: nombre,cantidad,linea,costo y precio')
+            else
+            begin
+              ObtenerPorcetaje;
+              ActualizarArticulo;
+            end;
+          end;
+          mrNo:
+        end;
+      end);
+   end;
 end;
 
 procedure TfArticulos.btnBorrarClick(Sender: TObject);
 begin
+   if not Combo_Seleccionado then ShowMessage('Ingrese el id del artículo a eliminar')
+   else
    begin
        MessageDlg('¿Desea eliminar el articulo seleccionado? ', System.UITypes.TMsgDlgType.mtInformation,
       [System.UITypes.TMsgDlgBtn.mbOK,System.UITypes.TMsgDlgBtn.mbNo], 0, procedure(const AResult: System.UITypes.TModalResult)
@@ -170,12 +186,7 @@ begin
 end;
 procedure TfArticulos.BtnInsertarClick(Sender: TObject);
 begin
-  if validar then
-  if not (editId.Text='') then
-  begin
-    ObtenerPorcetaje;
-    ActualizarArticulo;
-  end
+  if EditNombre.Text.Equals('') or EditCosto.Text.Equals('') or EditPrecio.Text.Equals('') or Combo_Seleccionado.ToString.Equals('False')  then ShowMessage('Para ingresar un articulo se requiere al menos: nombre,cantidad,linea,costo y precio')
   else
   begin
     ObtenerPorcetaje;
@@ -186,10 +197,10 @@ end;
 procedure TfArticulos.BtnPorcentajeClick(Sender: TObject);
 begin
   ObtenerPorcetaje;
-  ShowMessage('Porcentaje ganancia publico:'+(FormatFloat('#.##',Prcje_Publico ))+'%'+sLineBreak
-  +'Porcentaje ganancia Bolero:'+(FormatFloat('#.##',Prcje_Bolero ))+'%' +sLineBreak
-  +'Porcentaje ganancia mayoreo:'+(FormatFloat('#.##',Prcje_Mayoreo ))+'%' +sLineBreak
-  +'Porcentaje ganancia especial:'+(FormatFloat('#.##',Prcje_Especial ))+'%' +sLineBreak );
+  ShowMessage('Porcentaje ganancia publico:'+Prcje_Publico.ToString+'%'+sLineBreak
+  +'Porcentaje ganancia Bolero:'+Prcje_Bolero.ToString+'%' +sLineBreak
+  +'Porcentaje ganancia mayoreo:'+Prcje_Mayoreo.ToString+'%' +sLineBreak
+  +'Porcentaje ganancia especial:'+Prcje_Especial.ToString+'%' +sLineBreak );
 end;
 
 procedure TfArticulos.BuscarArticulo;
@@ -306,31 +317,11 @@ begin
   EditFlete.Text:=MainForm.Flete.ToString;
 end;
 
-procedure TfArticulos.FormVirtualKeyboardHidden(Sender: TObject;
-  KeyboardVisible: Boolean; const Bounds: TRect);
-begin
-  TecladoActivo:=False;
-end;
-
-procedure TfArticulos.FormVirtualKeyboardShown(Sender: TObject;
-  KeyboardVisible: Boolean; const Bounds: TRect);
-begin
-  TecladoActivo:=True;
-end;
-
-procedure TfArticulos.Image1Click(Sender: TObject);
-begin
-  if TecladoActivo then OcultarTeclado else MainForm.Show;
-end;
-
 procedure TfArticulos.InsertarArticulo;
 var
 Nombre:string;
-IVA:Integer;
 begin
-   if chkIva.IsChecked then IVA:=1
-   else IVA:=0;
-  try
+    try
     with MainForm.FDQueryInsertar,SQL do
     begin
       Clear;
@@ -338,18 +329,25 @@ begin
       Close;
       Open;
       Nombre:=(Fields[0].AsString);
-      if Nombre=('') then
-       begin
+      if Nombre.Equals('') then
+      begin
         Clear;
         Add('Insert into articulo (Nombre,Linea,Cantidad,Costo,Publico,Mayoreo,Bolero,Especial,IVA,Flete,Costo_Rec) ');
-        Add('Values ('+''''+EditNombre.Text+''''+','+''''+ComboBoxLinea.Selected.Text+''''+','+''''+EditCantidad.Text+''''+',');
-        Add(''''+EditCosto.Text+''''+','+''''+EditPrecio.Text+''''+','+''''+EditPrecioMayoreo.Text+''''+','+''''+EditBolero.text+''''+',');
-        Add(''''+EditPrecioEspecial.text+''''+','+IVA.ToString+','+EditFlete.text+','+''''+Costo+''''+')');
+        Add('Values (:Nombre,:Linea,:Cantidad,:Costo,:Publico,:Mayoreo,:Bolero,:Especial,:IVA,:Flete,:Costo_Rec)');
+        Params[0].AsString:=EditNombre.Text;
+        Params[1].AsString:=ComboBoxLinea.Selected.Text;
+        Params[2].AsString:=EditCantidad.Text;
+        Params[3].AsString:=EditPrecio.Text;
+        Params[4].AsString:=EditPrecioMayoreo.Text;
+        Params[5].AsString:=EditBolero.text;
+        Params[6].AsString:=EditPrecioEspecial.text;
+        if chkIva.IsChecked then Params[7].AsInteger:=1
+        else Params[7].AsInteger:=0;
+        Params[8].AsInteger:=EditFlete.text.ToInteger;
+        Params[9].AsString:=Costo;
         MainForm.FDQueryInsertar.ExecSQL;
         ToastImagen('Artículo insertado exitosamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
-        OcultarTeclado;
-        MainForm.LlenarTabla;
-       end
+      end
       else
       begin
         MessageDlg('Ya existe un articulo con el mismo nombre ¿Desea insertarlo? ', System.UITypes.TMsgDlgType.mtInformation,
@@ -359,14 +357,21 @@ begin
             mrOk:
             begin
               Clear;
-              Add('Insert into articulo (Nombre,Linea,Cantidad,Costo,Publico,Mayoreo,Bolero,Especial,IVA,Flete,Costo_Rec) ');
-              Add('Values ('+''''+EditNombre.Text+''''+','+''''+ComboBoxLinea.Selected.Text+''''+','+''''+EditCantidad.Text+''''+',');
-              Add(''''+EditCosto.Text+''''+','+''''+EditPrecio.Text+''''+','+''''+EditPrecioMayoreo.Text+''''+','+''''+EditBolero.text+''''+',');
-              Add(''''+EditPrecioEspecial.text+''''+','+IVA.ToString+','+EditFlete.text+','+''''+Costo+''''+')');
+              Add('Insert into articulo (Nombre,Linea,Cantidad,Costo,Publico,Mayoreo,Bolero,Especial,IVA,Flete) ');
+              Add('Values (:Nombre,:Linea,:Cantidad,:Costo,:Publico,:Mayoreo,:Bolero,:Especial,:IVA,:Flete)');
+              Params[0].AsString:=EditNombre.Text;
+              Params[1].AsString:=ComboBoxLinea.Selected.Text;
+              Params[2].AsString:=EditCantidad.Text;
+              Params[3].AsString:=EditPrecio.Text;
+              Params[4].AsString:=EditPrecioMayoreo.Text;
+              Params[5].AsString:=EditBolero.text;
+              Params[6].AsString:=EditPrecioEspecial.text;
+              if chkIva.IsChecked then Params[7].AsInteger:=1
+              else Params[7].AsInteger:=0;
+              Params[8].AsInteger:=EditFlete.text.ToInteger;
+              Params[9].AsString:=Costo;
               MainForm.FDQueryInsertar.ExecSQL;
               ToastImagen('Artículo insertado exitosamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
-              OcultarTeclado;
-              MainForm.LlenarTabla;
             end;
             mrNo:
           end;
@@ -398,7 +403,7 @@ procedure TfArticulos.ObtenerPorcetaje;
 var
   Precio,Bolero,Mayoreo,Especial : string;
 begin
- { Costo  := StringReplace(EditCosto.Text, '.',',',
+  Costo  := StringReplace(EditCosto.Text, '.',',',
     [rfReplaceAll, rfIgnoreCase]);
   Precio  := StringReplace(EditPrecio.Text, '.',',',
     [rfReplaceAll, rfIgnoreCase]);
@@ -407,12 +412,7 @@ begin
   Mayoreo  := StringReplace(EditPrecioMayoreo.Text, '.',',',
     [rfReplaceAll, rfIgnoreCase]);
   Especial  := StringReplace(EditPrecioEspecial.Text, '.',',',
-    [rfReplaceAll, rfIgnoreCase]); }
-  Costo  := EditCosto.Text;
-  Precio  := EditPrecio.Text;
-  Bolero  := EditBolero.Text;
-  Mayoreo := EditPrecioMayoreo.Text;
-  Especial:= EditPrecioEspecial.Text;
+    [rfReplaceAll, rfIgnoreCase]);
   //Asigna impuestos y flete
   if not ((Editflete.Text.ToInteger=0) or (Editflete.Text.Equals('')))  then
   Costo:=(StrToFloat(Costo)*(((StrToFloat(Editflete.Text))*0.01)+1)).ToString;
@@ -428,39 +428,5 @@ begin
   if EditprecioEspecial.Text<>('') then Prcje_Especial:=(100*((-costo.ToDouble+Especial.ToDouble)/Costo.ToDouble));
     //ShowMessage(Prcje_Especial.ToString);
   end;
-
-function TfArticulos.Validar: Boolean;
-begin
-  if EditNombre.Text.Equals('')  then
-  begin
-    ShowMessage('Ingrese un nombre para el artículo');
-    EditNombre.SetFocus;
-    Result:=False;
-    Exit;
-  end;
-  if EditCosto.Text.Equals('')  then
-  begin
-    ShowMessage('Ingrese un costo');
-    EditCosto.SetFocus;
-    Result:=False;
-    Exit;
-  end;
-
-  if EditPrecio.Text.Equals('') then
-  begin
-    ShowMessage('Ingrese un precio');
-    EditPrecio.SetFocus;
-    Result:=False;
-    Exit;
-  end;
-  if ComboBoxLinea.ItemIndex=-1 then
-  begin
-    ShowMessage('Seleccione una linea');
-    ComboBoxLinea.SetFocus;
-    Result:=False;
-    Exit;
-  end;
-  Result:=True;
-end;
 
 end.
