@@ -183,6 +183,7 @@ type
     procedure EditPrecioKeyDown(Sender: TObject; var Key: Word;
       var KeyChar: Char; Shift: TShiftState);
     procedure btnEditarClick(Sender: TObject);
+    procedure FondoOscuroClick(Sender: TObject);
   private
    Hoy :TDateTime;
    ComboEmpSelected:Boolean;
@@ -331,7 +332,7 @@ end;
 
 procedure TMainForm.btnBackClick(Sender: TObject);
 begin
-   mensajech.Visible:=false;
+   mensaje.Visible:=false;
    FondoOscuro.Visible:=False;
    OcultarTeclado;
 end;
@@ -380,7 +381,7 @@ end;
 
 procedure TMainForm.btnEditarClick(Sender: TObject);
 begin
-   MessageDlg('¿Desea ir a la pantalla de edición del artículo seleccionado? ', System.UITypes.TMsgDlgType.mtInformation,
+   MessageDlg('¿Desea editar el artículo? ', System.UITypes.TMsgDlgType.mtInformation,
     [System.UITypes.TMsgDlgBtn.mbOK,System.UITypes.TMsgDlgBtn.mbNo], 0, procedure(const AResult: System.UITypes.TModalResult)
     begin
       case AResult of
@@ -416,7 +417,7 @@ end;
 
 procedure TMainForm.btnRegresarClick(Sender: TObject);
 begin
-   mensaje.Visible:=false;
+   mensajech.Visible:=false;
    FondoOscuro.Visible:=False;
    OcultarTeclado;
 end;
@@ -806,6 +807,13 @@ begin
   if ComboEmpSelected then   ObtenerTrabajos;
 end;
 
+procedure TMainForm.FondoOscuroClick(Sender: TObject);
+begin
+   mensajech.Visible:=false;
+   FondoOscuro.Visible:=False;
+   OcultarTeclado;
+end;
+
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   { This defines the default active tab at runtime }
@@ -936,7 +944,8 @@ begin
         Params[4].AsString:=Fecha_Hora;
         Params[5].AsString:=EditFolio.Text;
         Params[6].AsString:=EditPrecio.Text;
-        FDQueryInsertar.ExecSQL
+        FDQueryInsertar.ExecSQL;
+        OcultarTeclado;
       end
       else
       begin
@@ -944,32 +953,36 @@ begin
         [System.UITypes.TMsgDlgBtn.mbOK,System.UITypes.TMsgDlgBtn.mbNo], 0, procedure(const AResult: System.UITypes.TModalResult)
         begin
           case AResult of
-            mrOk:
-            begin
-              Hoy:=Now;
-              Fecha:=(formatdatetime('d/m/y', Hoy));
-              Fecha_Hora:=((formatdatetime('d/m/y', Hoy))+(FormatDATETime(' hh:mm', Hoy)));
-              Clear;
-              Add('Insert into Reparacion  ');
-              Add('(Cantidad,Descripcion,Empleado,Fecha,Fecha_Hora,Folio,Precio)');
-              Add(' values (:Cantidad,:Descripcion,:Empleado,:Fecha,:Fecha_Hora,:Folio,:Precio)');
-              Params[0].AsString:=editCantidad.Text;
-              Params[1].AsString:=editDesc.Text;
-              Params[2].AsString:=ComboEmpleado.Selected.Text;
-              Params[3].AsString:=Fecha;
-              Params[4].AsString:=Fecha_Hora;
-              Params[5].AsString:=EditFolio.Text;
-              Params[6].AsString:=EditPrecio.Text;
-              FDQueryInsertar.ExecSQL
+              mrOk:
+              begin
+                Hoy:=Now;
+                Fecha:=(formatdatetime('d/m/y', Hoy));
+                Fecha_Hora:=((formatdatetime('d/m/y', Hoy))+(FormatDATETime(' hh:mm', Hoy)));
+                Clear;
+                Add('Insert into Reparacion  ');
+                Add('(Cantidad,Descripcion,Empleado,Fecha,Fecha_Hora,Folio,Precio)');
+                Add(' values (:Cantidad,:Descripcion,:Empleado,:Fecha,:Fecha_Hora,:Folio,:Precio)');
+                Params[0].AsString:=editCantidad.Text;
+                Params[1].AsString:=editDesc.Text;
+                Params[2].AsString:=ComboEmpleado.Selected.Text;
+                Params[3].AsString:=Fecha;
+                Params[4].AsString:=Fecha_Hora;
+                Params[5].AsString:=EditFolio.Text;
+                Params[6].AsString:=EditPrecio.Text;
+                FDQueryInsertar.ExecSQL;
+                OcultarTeclado;
+              end;
+              mrNo: OcultarTeclado;
             end;
-            mrNo:
-          end;
         end);
       end;
     end;
   except
     on E:exception do
+    begin
       ShowMessage('No se pudo insertar el artículo '+e.Message);
+      OcultarTeclado;
+    end;
   end;
 end;
 //Llena la lista de trabajos
@@ -1188,10 +1201,6 @@ begin
               (FDMemART.FieldByName('Mayoreo') as TStringField).AsString:= Fields[5].AsString;
               (FDMemART.FieldByName('Bolero') as TStringField).AsString:= Fields[6].AsString;
               (FDMemART.FieldByName('Especial') as TStringField).AsString:= Fields[7].AsString;
-              (FDMemART.FieldByName('P_Precio') as TStringField).AsString:= Fields[8].AsString;
-              (FDMemART.FieldByName('P_Mayoreo') as TStringField).AsString:= Fields[9].AsString;
-              (FDMemART.FieldByName('P_Bolero') as TStringField).AsString:= Fields[10].AsString;
-              (FDMemART.FieldByName('P_Especial') as TStringField).AsString:= Fields[11].AsString;
               FDMemART.Post;
               Next;
             end;
