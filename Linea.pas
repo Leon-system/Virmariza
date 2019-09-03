@@ -5,11 +5,10 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.ListBox,
-  FMX.StdCtrls, FMX.Layouts, FMX.Edit, FMX.Controls.Presentation;
+  FMX.StdCtrls, FMX.Layouts, FMX.Edit, FMX.Controls.Presentation, FMX.Objects;
 
 type
   TLineas = class(TForm)
-    ToolBar1: TToolBar;
     EditLinea: TEdit;
     Layout1: TLayout;
     btnGuardarLinea: TButton;
@@ -30,6 +29,8 @@ type
     BtnBorrarTrabajo: TButton;
     ComboTrabajo: TComboBox;
     EdtInfo: TEdit;
+    ToolBar1: TToolBar;
+    Image1: TImage;
     procedure InsertarLinea;
     procedure InsertarEmpleado;
     procedure InsertarTrabajo;
@@ -49,6 +50,8 @@ type
     procedure ComboLineaChange(Sender: TObject);
     procedure ComboTrabajoChange(Sender: TObject);
     procedure ComboEmpleadoChange(Sender: TObject);
+    procedure btnbackClick(Sender: TObject);
+    procedure Image1Click(Sender: TObject);
   private
     { Private declarations }
     Empleado,Trabajo,Linea:Boolean;
@@ -117,6 +120,11 @@ begin
     on E:exception do
     ShowMessage('No se pudo borrar la linea '+e.Message);
   end;
+end;
+
+procedure TLineas.btnbackClick(Sender: TObject);
+begin
+  MainForm.Show;
 end;
 
 //
@@ -321,6 +329,11 @@ begin
   BuscarLinea;
   BuscarEmp;
   BuscarTrabajo;
+end;
+
+procedure TLineas.Image1Click(Sender: TObject);
+begin
+  MainForm.Show;
 end;
 
 procedure TLineas.InsertarEmpleado;

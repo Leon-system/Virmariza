@@ -5,7 +5,7 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
-  FMX.Edit, FMX.Controls.Presentation, FMX.Layouts;
+  FMX.Edit, FMX.Controls.Presentation, FMX.Layouts, FMX.Objects;
 
 type
   TFAvanzada = class(TForm)
@@ -27,9 +27,13 @@ type
     Layout7: TLayout;
     Label3: TLabel;
     edtMax: TEdit;
+    ToolBar1: TToolBar;
+    Image1: TImage;
     procedure btnGuardarClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ObtenerDetalle;
+    procedure btnbackClick(Sender: TObject);
+    procedure Image1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -45,6 +49,11 @@ uses
   Main, Funciones_Android;
 
 {$R *.fmx}
+
+procedure TFAvanzada.btnbackClick(Sender: TObject);
+begin
+  MainForm.Show;
+end;
 
 procedure TFAvanzada.btnGuardarClick(Sender: TObject);
 var
@@ -81,6 +90,11 @@ begin
   ObtenerDetalle;
 end;
 
+procedure TFAvanzada.Image1Click(Sender: TObject);
+begin
+  MainForm.Show;
+end;
+
 procedure TFAvanzada.ObtenerDetalle;
 begin
    try
@@ -90,14 +104,14 @@ begin
       Clear;
       Add('SELECT   Dias_Eliminar,C_Articulos,C_Empleados,C_Reparacion,Flete,MaxDia');
       Add('FROM Configuracion ');
+      Close;
+      Open;
       EdtDias.Text:=Fields[0].AsString;
       if Fields[1].AsInteger=1 then CheckArt.IsChecked:=True;
       if Fields[2].AsInteger=1 then CheckLyE.IsChecked:=True;
       if Fields[3].AsInteger=1 then CheckRep.IsChecked:=True;
       EdtFlete.Text:=Fields[4].AsString;
       edtMax.Text:=Fields[5].AsString;
-      Close;
-      Open;
      end;
   except
     on E:exception do
