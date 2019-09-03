@@ -5,7 +5,7 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.ListBox,
-  FMX.StdCtrls, FMX.Layouts, FMX.Edit, FMX.Controls.Presentation, FMX.Objects;
+  FMX.StdCtrls, FMX.Layouts, FMX.Edit, FMX.Controls.Presentation;
 
 type
   TLineas = class(TForm)
@@ -30,7 +30,6 @@ type
     BtnBorrarTrabajo: TButton;
     ComboTrabajo: TComboBox;
     EdtInfo: TEdit;
-    Image1: TImage;
     procedure InsertarLinea;
     procedure InsertarEmpleado;
     procedure InsertarTrabajo;
@@ -50,7 +49,6 @@ type
     procedure ComboLineaChange(Sender: TObject);
     procedure ComboTrabajoChange(Sender: TObject);
     procedure ComboEmpleadoChange(Sender: TObject);
-    procedure Image1Click(Sender: TObject);
   private
     { Private declarations }
     Empleado,Trabajo,Linea:Boolean;
@@ -323,11 +321,6 @@ begin
   BuscarLinea;
   BuscarEmp;
   BuscarTrabajo;
-end;
-
-procedure TLineas.Image1Click(Sender: TObject);
-begin
-  MainForm.Show;
 end;
 
 procedure TLineas.InsertarEmpleado;
