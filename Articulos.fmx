@@ -11,210 +11,6 @@ object fArticulos: TfArticulos
   OnVirtualKeyboardShown = FormVirtualKeyboardShown
   OnVirtualKeyboardHidden = FormVirtualKeyboardHidden
   DesignerMasterStyle = 3
-  object Line1: TLine
-    Align = Top
-    LineType = Diagonal
-    Position.Y = 48.000000000000000000
-    Size.Width = 659.000000000000000000
-    Size.Height = 1.000000000000000000
-    Size.PlatformDefault = False
-  end
-  object Layout1: TLayout
-    Align = Top
-    Position.Y = 49.000000000000000000
-    Size.Width = 659.000000000000000000
-    Size.Height = 40.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 2
-    object editId: TEdit
-      Touch.InteractiveGestures = [LongTap, DoubleTap]
-      Align = Left
-      TabOrder = 0
-      KeyboardType = NumberPad
-      ReadOnly = True
-      Position.Y = 4.000000000000000000
-      Size.Width = 321.000000000000000000
-      Size.Height = 32.000000000000000000
-      Size.PlatformDefault = False
-      TextPrompt = 'ID'
-    end
-  end
-  object EditNombre: TEdit
-    Touch.InteractiveGestures = [LongTap, DoubleTap]
-    Align = Top
-    TabOrder = 3
-    Position.Y = 89.000000000000000000
-    Size.Width = 659.000000000000000000
-    Size.Height = 32.000000000000000000
-    Size.PlatformDefault = False
-    TextPrompt = 'Nombre'
-    OnKeyDown = EditNombreKeyDown
-  end
-  object Layout2: TLayout
-    Align = Top
-    Position.Y = 153.000000000000000000
-    Size.Width = 659.000000000000000000
-    Size.Height = 33.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 5
-    object EditCantidad: TEdit
-      Touch.InteractiveGestures = [LongTap, DoubleTap]
-      Align = Left
-      TabOrder = 0
-      Size.Width = 169.000000000000000000
-      Size.Height = 32.000000000000000000
-      Size.PlatformDefault = False
-      TextPrompt = 'Unidad/Cantidad'
-      OnKeyDown = EditCantidadKeyDown
-    end
-    object EditCosto: TEdit
-      Touch.InteractiveGestures = [LongTap, DoubleTap]
-      Align = Center
-      TabOrder = 1
-      KeyboardType = DecimalNumberPad
-      Size.Width = 79.000000000000000000
-      Size.Height = 32.000000000000000000
-      Size.PlatformDefault = False
-      TextPrompt = 'Costo'
-      OnKeyDown = EditCostoKeyDown
-    end
-    object EditPrecio: TEdit
-      Touch.InteractiveGestures = [LongTap, DoubleTap]
-      Align = Right
-      TabOrder = 2
-      KeyboardType = DecimalNumberPad
-      Position.X = 248.000000000000000000
-      Size.Width = 144.000000000000000000
-      Size.Height = 32.000000000000000000
-      Size.PlatformDefault = False
-      TextPrompt = 'Precio al publico'
-      OnKeyDown = EditPrecioKeyDown
-    end
-    object Label3: TLabel
-      Align = Right
-      Position.X = 392.000000000000000000
-      Size.Width = 168.000000000000000000
-      Size.Height = 33.000000000000000000
-      Size.PlatformDefault = False
-      Text = 'Costo recalculado:'
-      TabOrder = 3
-    end
-    object lblRecalc: TLabel
-      Align = MostRight
-      Position.X = 560.000000000000000000
-      Size.Width = 99.000000000000000000
-      Size.Height = 33.000000000000000000
-      Size.PlatformDefault = False
-      TabOrder = 4
-    end
-  end
-  object Layout3: TLayout
-    Align = Top
-    Position.Y = 186.000000000000000000
-    Size.Width = 659.000000000000000000
-    Size.Height = 40.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 6
-    object EditBolero: TEdit
-      Touch.InteractiveGestures = [LongTap, DoubleTap]
-      Align = Left
-      TabOrder = 0
-      KeyboardType = DecimalNumberPad
-      Position.Y = 4.000000000000000000
-      Size.Width = 184.000000000000000000
-      Size.Height = 32.000000000000000000
-      Size.PlatformDefault = False
-      TextPrompt = 'Precio de bolero'
-      OnKeyDown = EditBoleroKeyDown
-    end
-    object EditPrecioMayoreo: TEdit
-      Touch.InteractiveGestures = [LongTap, DoubleTap]
-      Align = Center
-      TabOrder = 1
-      KeyboardType = DecimalNumberPad
-      Size.Width = 145.000000000000000000
-      Size.Height = 32.000000000000000000
-      Size.PlatformDefault = False
-      TextPrompt = 'Precio mayoreo'
-      OnKeyDown = EditPrecioMayoreoKeyDown
-    end
-    object EditPrecioEspecial: TEdit
-      Touch.InteractiveGestures = [LongTap, DoubleTap]
-      Align = Right
-      TabOrder = 2
-      KeyboardType = DecimalNumberPad
-      Position.X = 504.000000000000000000
-      Position.Y = 4.000000000000000000
-      Size.Width = 155.000000000000000000
-      Size.Height = 32.000000000000000000
-      Size.PlatformDefault = False
-      TextPrompt = 'Precio especial'
-      OnKeyDown = EditPrecioEspecialKeyDown
-    end
-  end
-  object Layout5: TLayout
-    Align = Top
-    Position.Y = 121.000000000000000000
-    Size.Width = 659.000000000000000000
-    Size.Height = 32.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 7
-    object ComboBoxLinea: TComboBox
-      Align = Right
-      Position.X = 8.000000000000000000
-      Size.Width = 651.000000000000000000
-      Size.Height = 32.000000000000000000
-      Size.PlatformDefault = False
-      TabOrder = 0
-      OnChange = ComboBoxLineaChange
-    end
-    object Label1: TLabel
-      Align = Left
-      Size.Width = 177.000000000000000000
-      Size.Height = 32.000000000000000000
-      Size.PlatformDefault = False
-      Text = 'Seleccione una linea'
-      TabOrder = 1
-    end
-  end
-  object Layout6: TLayout
-    Align = Top
-    Position.Y = 226.000000000000000000
-    Size.Width = 659.000000000000000000
-    Size.Height = 31.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 4
-    object EditFlete: TEdit
-      Touch.InteractiveGestures = [LongTap, DoubleTap]
-      Align = Right
-      TabOrder = 0
-      KeyboardType = DecimalNumberPad
-      Text = '0'
-      Position.X = 504.000000000000000000
-      Size.Width = 155.000000000000000000
-      Size.Height = 32.000000000000000000
-      Size.PlatformDefault = False
-      TextPrompt = 'Flete%'
-      OnKeyDown = EditCostoKeyDown
-    end
-    object chkIva: TCheckBox
-      Align = Left
-      Size.Width = 337.000000000000000000
-      Size.Height = 31.000000000000000000
-      Size.PlatformDefault = False
-      TabOrder = 1
-      Text = 'Agregar I.V.A.'
-    end
-    object Label2: TLabel
-      Align = Right
-      Position.X = 307.000000000000000000
-      Size.Width = 197.000000000000000000
-      Size.Height = 31.000000000000000000
-      Size.PlatformDefault = False
-      Text = 'Flete'
-      TabOrder = 2
-    end
-  end
   object ToolBar2: TToolBar
     Size.Width = 659.000000000000000000
     Size.Height = 48.000000000000000000
@@ -661,6 +457,206 @@ object fArticulos: TfArticulos
         TabOrder = 1
         Text = 'Guardar'
         OnClick = BtnInsertarClick
+      end
+    end
+  end
+  object VertScrollBox1: TVertScrollBox
+    Align = Client
+    Size.Width = 659.000000000000000000
+    Size.Height = 419.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    Viewport.Width = 659.000000000000000000
+    Viewport.Height = 419.000000000000000000
+    object MainLayout1: TLayout
+      Align = Client
+      Size.Width = 659.000000000000000000
+      Size.Height = 419.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      object Layout2: TLayout
+        Align = Top
+        Position.Y = 105.000000000000000000
+        Size.Width = 659.000000000000000000
+        Size.Height = 33.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object EditCantidad: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Left
+          TabOrder = 0
+          Size.Width = 169.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          TextPrompt = 'Unidad/Cantidad'
+          OnKeyDown = EditCantidadKeyDown
+        end
+        object EditCosto: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Center
+          TabOrder = 1
+          KeyboardType = DecimalNumberPad
+          Size.Width = 79.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          TextPrompt = 'Costo'
+          OnKeyDown = EditCostoKeyDown
+        end
+        object EditPrecio: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Right
+          TabOrder = 2
+          KeyboardType = DecimalNumberPad
+          Position.X = 248.000000000000000000
+          Size.Width = 144.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          TextPrompt = 'Precio al publico'
+          OnKeyDown = EditPrecioKeyDown
+        end
+        object Label3: TLabel
+          Align = Right
+          Position.X = 392.000000000000000000
+          Size.Width = 168.000000000000000000
+          Size.Height = 33.000000000000000000
+          Size.PlatformDefault = False
+          Text = 'Costo recalculado:'
+          TabOrder = 3
+        end
+        object lblRecalc: TLabel
+          Align = MostRight
+          Position.X = 560.000000000000000000
+          Size.Width = 99.000000000000000000
+          Size.Height = 33.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 4
+        end
+      end
+      object Layout3: TLayout
+        Align = Top
+        Position.Y = 65.000000000000000000
+        Size.Width = 659.000000000000000000
+        Size.Height = 40.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        object EditBolero: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Left
+          TabOrder = 0
+          KeyboardType = DecimalNumberPad
+          Position.Y = 4.000000000000000000
+          Size.Width = 184.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          TextPrompt = 'Precio de bolero'
+          OnKeyDown = EditBoleroKeyDown
+        end
+        object EditPrecioMayoreo: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Center
+          TabOrder = 1
+          KeyboardType = DecimalNumberPad
+          Size.Width = 145.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          TextPrompt = 'Precio mayoreo'
+          OnKeyDown = EditPrecioMayoreoKeyDown
+        end
+        object EditPrecioEspecial: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Right
+          TabOrder = 2
+          KeyboardType = DecimalNumberPad
+          Position.X = 504.000000000000000000
+          Position.Y = 4.000000000000000000
+          Size.Width = 155.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          TextPrompt = 'Precio especial'
+          OnKeyDown = EditPrecioEspecialKeyDown
+        end
+      end
+      object Layout5: TLayout
+        Align = Top
+        Position.Y = 33.000000000000000000
+        Size.Width = 659.000000000000000000
+        Size.Height = 32.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        object ComboBoxLinea: TComboBox
+          Align = Right
+          Items.Strings = (
+            '')
+          Position.X = 208.000000000000000000
+          Size.Width = 451.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+        end
+        object Label1: TLabel
+          Align = Left
+          Size.Width = 177.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          Text = 'Seleccione una linea:'
+          TabOrder = 1
+        end
+      end
+      object Layout6: TLayout
+        Align = Top
+        Position.Y = 138.000000000000000000
+        Size.Width = 659.000000000000000000
+        Size.Height = 32.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 3
+        object EditFlete: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          Align = Right
+          TabOrder = 0
+          KeyboardType = DecimalNumberPad
+          Text = '0'
+          Position.X = 504.000000000000000000
+          Size.Width = 155.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          TextPrompt = 'Flete%'
+          OnKeyDown = EditCostoKeyDown
+        end
+        object Label2: TLabel
+          Align = Right
+          Position.X = 307.000000000000000000
+          Size.Width = 197.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          Text = 'Flete'
+          TabOrder = 1
+        end
+        object chkIva: TCheckBox
+          Align = Left
+          Size.Width = 257.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 2
+          Text = 'Agregar I.V.A.'
+        end
+      end
+      object EditNombre: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Top
+        TabOrder = 4
+        Position.Y = 1.000000000000000000
+        Size.Width = 659.000000000000000000
+        Size.Height = 32.000000000000000000
+        Size.PlatformDefault = False
+        TextPrompt = 'Nombre'
+        OnKeyDown = EditNombreKeyDown
+      end
+      object Line1: TLine
+        Align = MostTop
+        LineType = Diagonal
+        Size.Width = 659.000000000000000000
+        Size.Height = 1.000000000000000000
+        Size.PlatformDefault = False
       end
     end
   end

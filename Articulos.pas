@@ -9,13 +9,11 @@ uses
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client;
+  FireDAC.Comp.Client,System.math;
 
 type
   TfArticulos = class(TForm)
     Line1: TLine;
-    editId: TEdit;
-    Layout1: TLayout;
     EditNombre: TEdit;
     ComboBoxLinea: TComboBox;
     Label1: TLabel;
@@ -40,20 +38,21 @@ type
     lblRecalc: TLabel;
     ToolBar2: TToolBar;
     Image1: TImage;
+    MainLayout1: TLayout;
+    VertScrollBox1: TVertScrollBox;
     procedure BtnBuscarClick(Sender: TObject);
     procedure btnBorrarClick(Sender: TObject);
-    procedure InsertarArticulo;
+    Function InsertarArticulo:Boolean;
     procedure BuscarArticulo;
     procedure BuscarLinea;
-    procedure ActualizarArticulo;
-    procedure BorrarArticulo;
+    Function ActualizarArticulo:Boolean;
+    Function BorrarArticulo:Boolean;
     procedure ObtenerPorcetaje;
     procedure Limpiar;
     function Validar:Boolean;
     procedure BtnInsertarClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure BtnPorcentajeClick(Sender: TObject);
-    procedure ComboBoxLineaChange(Sender: TObject);
     procedure EditNombreKeyDown(Sender: TObject; var Key: Word;
       var KeyChar: Char; Shift: TShiftState);
     procedure EditCantidadKeyDown(Sender: TObject; var Key: Word;
@@ -74,6 +73,7 @@ type
       KeyboardVisible: Boolean; const Bounds: TRect);
     procedure FormVirtualKeyboardShown(Sender: TObject;
       KeyboardVisible: Boolean; const Bounds: TRect);
+    procedure FormFocusChanged(Sender: TObject);
 
   private
   TecladoActivo: Boolean;
@@ -83,9 +83,16 @@ type
   Prcje_Mayoreo:Double;
   Prcje_Especial:Double;
   Costo:string;
-
+  private
     { Private declarations }
+  FKBBounds: TRectF;
+  FNeedOffset: Boolean;
+  procedure UpdateKBBounds;
+  procedure RestorePosition;
+  procedure CalcContentBoundsProc(Sender: TObject;
+  var ContentBounds: TRectF);
   public
+  ID:Integer;
     { Public declarations }
   end;
 
@@ -98,7 +105,7 @@ implementation
 
 uses Main, FGX.Toasts, FGX.Toasts.Android, Funciones_Android;
 
-procedure TfArticulos.ActualizarArticulo;
+Function TfArticulos.ActualizarArticulo:Boolean;
 var
 IVA:Integer;
 begin
@@ -111,34 +118,37 @@ begin
       Add('Update articulo set Nombre='+''''+EditNombre.Text+''''+',Linea='+''''+ComboBoxLinea.Selected.Text+''''+',Cantidad='+''''+EditCantidad.Text+''''+',Costo='+''''+EditCosto.Text+''''+',Publico='+''''+EditPrecio.Text+'''');
       Add(',Mayoreo='+''''+EditPrecioMayoreo.Text+''''+',Bolero='+''''+EditBolero.text+''''+',Especial='+''''+EditPrecioEspecial.text+'''');
       Add(',IVA='+IVA.ToString+',Flete='+EditFlete.text+',Costo_Rec='+''''+Costo+'''');
-      Add(' Where rowid='+''''+Editid.Text+'''');
+      Add(' Where rowid='+ID.ToString);
       MainForm.FDQueryInsertar.ExecSQL;
-      Limpiar;
-      ToastImagen('Artículo actualizado correctamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
-      OcultarTeclado;
-      MainForm.LlenarTabla;
+      Result:=True;
     end;
   except
     on E:exception do
+    begin
       ShowMessage('No se pudo actualizar el artículo '+e.Message);
+      Result:=False;
+    end;
+
   end;
 end;
 
-procedure TfArticulos.BorrarArticulo;
+function TfArticulos.BorrarArticulo:Boolean;
 begin
   try
     with MainForm.FDQueryInsertar,SQL do
     begin
       Clear;
-      Add('Delete from articulo where rowid='+''''+Editid.Text+'''');
+      Add('Delete from articulo where rowid='+ID.ToString);
       MainForm.FDQueryInsertar.ExecSQL;
-      Limpiar;
-      ToastImagen('Articulo eliminado correctamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
-      MainForm.LlenarTabla;
+      Result:=True;
     end;
   except
     on E:exception do
-    ShowMessage('No se pudo borrar el artículo '+e.Message);
+    begin
+      ShowMessage('No se pudo borrar el artículo '+e.Message);
+      Result:=False;
+    end;
+
   end;
 end;
 
@@ -156,7 +166,12 @@ begin
         case AResult of
           mrOk:
           begin
-            BorrarArticulo;
+           if  BorrarArticulo then
+           begin
+             Limpiar;
+             ToastImagen('Articulo eliminado correctamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
+             MainForm.LlenarTabla;
+           end;
           end;
           mrNo:
         end;
@@ -171,15 +186,27 @@ end;
 procedure TfArticulos.BtnInsertarClick(Sender: TObject);
 begin
   if validar then
-  if not (editId.Text='') then
+  if ID>0 then
   begin
     ObtenerPorcetaje;
-    ActualizarArticulo;
+    if InsertarArticulo then
+    begin
+      Limpiar;
+      OcultarTeclado;
+      MainForm.LlenarTabla;
+      ToastImagen('Artículo actualizado correctamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
+    end;
   end
   else
   begin
     ObtenerPorcetaje;
-    InsertarArticulo;
+    if ActualizarArticulo then
+    begin
+      Limpiar;
+      OcultarTeclado;
+      MainForm.LlenarTabla;
+      ToastImagen('Artículo actualizado correctamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
+    end;
   end;
 end;
 
@@ -199,7 +226,7 @@ begin
     begin
       Active :=  False;
       Clear;
-      Add('select Nombre,Cantidad,Costo,Publico,Bolero,Mayoreo,Especial,Iva,Flete,Costo_Rec from Articulo where rowid='+''''+Editid.Text+'''');
+      Add('select Nombre,Cantidad,Costo,Publico,Bolero,Mayoreo,Especial,Iva,Flete,Costo_Rec from Articulo where rowid='+id.ToString);
       //Add('');
       Close;
       Open;
@@ -253,9 +280,14 @@ begin
   end;
 end;
 
-procedure TfArticulos.ComboBoxLineaChange(Sender: TObject);
+procedure TfArticulos.CalcContentBoundsProc(Sender: TObject;
+  var ContentBounds: TRectF);
 begin
-  Combo_Seleccionado:=True;
+   if FNeedOffset and (FKBBounds.Top > 0) then
+  begin
+    ContentBounds.Bottom := Max(ContentBounds.Bottom,
+                                30 * ClientHeight - FKBBounds.Top);
+  end;
 end;
 
 procedure TfArticulos.EditBoleroKeyDown(Sender: TObject; var Key: Word;
@@ -300,6 +332,11 @@ begin
    if Key = vkReturn then EditPrecioEspecial.SetFocus;
 end;
 
+procedure TfArticulos.FormFocusChanged(Sender: TObject);
+begin
+  UpdateKBBounds;
+end;
+
 procedure TfArticulos.FormShow(Sender: TObject);
 begin
   BuscarLinea;
@@ -310,12 +347,20 @@ procedure TfArticulos.FormVirtualKeyboardHidden(Sender: TObject;
   KeyboardVisible: Boolean; const Bounds: TRect);
 begin
   TecladoActivo:=False;
+  FKBBounds.Create(0, 0, 0, 0);
+  FNeedOffset := False;
+  RestorePosition;
+  //Layout1.Align := TAlignLayout.Bottom;
 end;
 
 procedure TfArticulos.FormVirtualKeyboardShown(Sender: TObject;
   KeyboardVisible: Boolean; const Bounds: TRect);
 begin
   TecladoActivo:=True;
+  FKBBounds := TRectF.Create(Bounds);
+  FKBBounds.TopLeft := ScreenToClient(FKBBounds.TopLeft);
+  FKBBounds.BottomRight := ScreenToClient(FKBBounds.BottomRight);
+  UpdateKBBounds;
 end;
 
 procedure TfArticulos.Image1Click(Sender: TObject);
@@ -323,7 +368,7 @@ begin
   if TecladoActivo then OcultarTeclado else MainForm.Show;
 end;
 
-procedure TfArticulos.InsertarArticulo;
+function TfArticulos.InsertarArticulo:Boolean;
 var
 Nombre:string;
 IVA:Integer;
@@ -346,13 +391,11 @@ begin
         Add(''''+EditCosto.Text+''''+','+''''+EditPrecio.Text+''''+','+''''+EditPrecioMayoreo.Text+''''+','+''''+EditBolero.text+''''+',');
         Add(''''+EditPrecioEspecial.text+''''+','+IVA.ToString+','+EditFlete.text+','+''''+Costo+''''+')');
         MainForm.FDQueryInsertar.ExecSQL;
-        ToastImagen('Artículo insertado exitosamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
-        OcultarTeclado;
-        MainForm.LlenarTabla;
+        Result:=True;
        end
       else
       begin
-        MessageDlg('Ya existe un articulo con el mismo nombre ¿Desea insertarlo? ', System.UITypes.TMsgDlgType.mtInformation,
+        MessageDlg('Ya existe un articulo con el mismo nombre ¿Desea insertarlo nuevamente? ', System.UITypes.TMsgDlgType.mtInformation,
         [System.UITypes.TMsgDlgBtn.mbOK,System.UITypes.TMsgDlgBtn.mbNo], 0, procedure(const AResult: System.UITypes.TModalResult)
         begin
           case AResult of
@@ -364,9 +407,7 @@ begin
               Add(''''+EditCosto.Text+''''+','+''''+EditPrecio.Text+''''+','+''''+EditPrecioMayoreo.Text+''''+','+''''+EditBolero.text+''''+',');
               Add(''''+EditPrecioEspecial.text+''''+','+IVA.ToString+','+EditFlete.text+','+''''+Costo+''''+')');
               MainForm.FDQueryInsertar.ExecSQL;
-              ToastImagen('Artículo insertado exitosamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
-              OcultarTeclado;
-              MainForm.LlenarTabla;
+              Result:=True;
             end;
             mrNo:
           end;
@@ -375,13 +416,16 @@ begin
     end;
   except
     on E:exception do
-      ShowMessage('No se pudo insertar el artículo '+e.Message);
+    begin
+       ShowMessage('No se pudo insertar el artículo '+e.Message);
+       Result:=False;
+    end;
   end;
 end;
 
 procedure TfArticulos.Limpiar;
 begin
-  editId.Text:='';
+  ID:=0;
   EditNombre.Text:='';
   EditCantidad.Text:='';
   EditCosto.Text:='';
@@ -392,6 +436,7 @@ begin
   EditFlete.Text:='';
   chkIva.IsChecked:=False;
   EditFlete.Text:=MainForm.Flete.ToString;
+  ComboBoxLinea.ItemIndex:=-1;
 end;
 
 procedure TfArticulos.ObtenerPorcetaje;
@@ -428,6 +473,40 @@ begin
   if EditprecioEspecial.Text<>('') then Prcje_Especial:=(100*((-costo.ToDouble+Especial.ToDouble)/Costo.ToDouble));
     //ShowMessage(Prcje_Especial.ToString);
   end;
+
+procedure TfArticulos.RestorePosition;
+begin
+  VertScrollBox1.ViewportPosition := PointF(VertScrollBox1.ViewportPosition.X, 0);
+  MainLayout1.Align := TAlignLayout.Client;
+  VertScrollBox1.RealignContent;
+end;
+
+procedure TfArticulos.UpdateKBBounds;
+ var
+  LFocused : TControl;
+  LFocusRect: TRectF;
+begin
+   FNeedOffset := False;
+  if Assigned(Focused) then
+  begin
+    LFocused := TControl(Focused.GetObject);
+    LFocusRect := LFocused.AbsoluteRect;
+    LFocusRect.Offset(VertScrollBox1.ViewportPosition);
+    if (LFocusRect.IntersectsWith(TRectF.Create(FKBBounds))) and (LFocusRect.Bottom > FKBBounds.Top)
+    then
+    begin
+      FNeedOffset := True;
+      MainLayout1.Align := TAlignLayout.Horizontal;
+      VertScrollBox1.RealignContent;
+      Application.ProcessMessages;
+      VertScrollBox1.ViewportPosition :=
+      PointF(VertScrollBox1.ViewportPosition.X,
+      LFocusRect.Bottom - FKBBounds.Top);
+    end;
+  end;
+  if not FNeedOffset then
+    RestorePosition;
+end;
 
 function TfArticulos.Validar: Boolean;
 begin

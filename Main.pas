@@ -120,6 +120,9 @@ type
     lblPrecio: TLabel;
     lblBolero: TLabel;
     btnEditar: TImage;
+    Layout6: TLayout;
+    Layout7: TLayout;
+    Layout9: TLayout;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure ConexionBeforeConnect(Sender: TObject);
@@ -403,7 +406,7 @@ begin
             Farticulos:=TFarticulos.Create(nil);
             try
               Farticulos.Show;
-              Farticulos.editId.Text:=FDMemART.FieldByName('ID').AsString;
+              Farticulos.ID:=FDMemART.FieldByName('ID').AsInteger;
               fArticulos.BuscarArticulo;
             finally
               Farticulos.Free;
