@@ -42,9 +42,9 @@ var
   KeyboardService: IFMXVirtualKeyboardService;
 begin
   MainForm.TimerPresentacion.Enabled:=false;
-  if TPlatformServices.Current.SupportsPlatformService(IFMXVirtualKeyboardService, IInterface(KeyboardService)) then
+ { if TPlatformServices.Current.SupportsPlatformService(IFMXVirtualKeyboardService, IInterface(KeyboardService)) then
   KeyboardService.HideVirtualKeyboard;
-  FMX.Types.VKAutoShowMode :=TVKAutoShowMode.Never;
+  FMX.Types.VKAutoShowMode :=TVKAutoShowMode.Never; }
   if Tipo=1 then
   begin
     tClose.Interval:=45000;

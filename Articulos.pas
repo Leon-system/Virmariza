@@ -25,7 +25,6 @@ type
     Layout2: TLayout;
     Layout3: TLayout;
     EditPrecioEspecial: TEdit;
-    Layout4: TLayout;
     btnBorrar: TButton;
     BtnPorcentaje: TButton;
     BtnInsertar: TButton;
@@ -36,10 +35,9 @@ type
     Label2: TLabel;
     Label3: TLabel;
     lblRecalc: TLabel;
-    ToolBar2: TToolBar;
-    Image1: TImage;
     MainLayout1: TLayout;
     VertScrollBox1: TVertScrollBox;
+    lytBtn: TLayout;
     procedure BtnBuscarClick(Sender: TObject);
     procedure btnBorrarClick(Sender: TObject);
     Function InsertarArticulo:Boolean;
@@ -67,7 +65,6 @@ type
       var KeyChar: Char; Shift: TShiftState);
     procedure EditPrecioEspecialKeyDown(Sender: TObject; var Key: Word;
       var KeyChar: Char; Shift: TShiftState);
-    procedure btnbackClick(Sender: TObject);
     procedure Image1Click(Sender: TObject);
     procedure FormVirtualKeyboardHidden(Sender: TObject;
       KeyboardVisible: Boolean; const Bounds: TRect);
@@ -152,10 +149,6 @@ begin
   end;
 end;
 
-procedure TfArticulos.btnbackClick(Sender: TObject);
-begin
-  MainForm.Show;
-end;
 
 procedure TfArticulos.btnBorrarClick(Sender: TObject);
 begin
@@ -185,10 +178,11 @@ begin
 end;
 procedure TfArticulos.BtnInsertarClick(Sender: TObject);
 begin
+  ObtenerPorcetaje;
   if validar then
   if ID>0 then
   begin
-    ObtenerPorcetaje;
+
     if InsertarArticulo then
     begin
       Limpiar;
@@ -199,7 +193,6 @@ begin
   end
   else
   begin
-    ObtenerPorcetaje;
     if ActualizarArticulo then
     begin
       Limpiar;
@@ -372,6 +365,7 @@ function TfArticulos.InsertarArticulo:Boolean;
 var
 Nombre:string;
 IVA:Integer;
+Cancelo:Boolean;
 begin
    if chkIva.IsChecked then IVA:=1
    else IVA:=0;
@@ -391,7 +385,6 @@ begin
         Add(''''+EditCosto.Text+''''+','+''''+EditPrecio.Text+''''+','+''''+EditPrecioMayoreo.Text+''''+','+''''+EditBolero.text+''''+',');
         Add(''''+EditPrecioEspecial.text+''''+','+IVA.ToString+','+EditFlete.text+','+''''+Costo+''''+')');
         MainForm.FDQueryInsertar.ExecSQL;
-        Result:=True;
        end
       else
       begin
@@ -407,13 +400,15 @@ begin
               Add(''''+EditCosto.Text+''''+','+''''+EditPrecio.Text+''''+','+''''+EditPrecioMayoreo.Text+''''+','+''''+EditBolero.text+''''+',');
               Add(''''+EditPrecioEspecial.text+''''+','+IVA.ToString+','+EditFlete.text+','+''''+Costo+''''+')');
               MainForm.FDQueryInsertar.ExecSQL;
-              Result:=True;
             end;
             mrNo:
+            Cancelo:=True;
           end;
         end);
       end;
     end;
+    if not Cancelo then
+    Result:=True;
   except
     on E:exception do
     begin
@@ -536,6 +531,57 @@ begin
   begin
     ShowMessage('Seleccione una linea');
     ComboBoxLinea.SetFocus;
+    Result:=False;
+    Exit;
+  end;
+  if  Prcje_Publico<=0 then
+  begin
+    MessageDlg('¿El porcentaje de ganancia al público en general es igual o menor a cero, ¿Desea continuar guardando el artículo con pérdidas? ', System.UITypes.TMsgDlgType.mtInformation,
+    [System.UITypes.TMsgDlgBtn.mbOK,System.UITypes.TMsgDlgBtn.mbNo], 0, procedure(const AResult: System.UITypes.TModalResult)
+    begin
+      case AResult of
+        mrOk:
+        begin
+         Exit
+        end;
+        mrNo:
+      end;
+    end);
+    EditPrecio.SetFocus;
+    Result:=False;
+    Exit;
+  end;
+   if  Prcje_Bolero<=0 then
+  begin
+    MessageDlg('¿El porcentaje de ganancia para bolero es igual o menor a cero, ¿Desea continuar guardando el artículo con pérdidas? ', System.UITypes.TMsgDlgType.mtInformation,
+    [System.UITypes.TMsgDlgBtn.mbOK,System.UITypes.TMsgDlgBtn.mbNo], 0, procedure(const AResult: System.UITypes.TModalResult)
+    begin
+      case AResult of
+        mrOk:
+        begin
+         Exit
+        end;
+        mrNo:
+      end;
+    end);
+    EditBolero.SetFocus;
+    Result:=False;
+    Exit;
+  end;
+   if  Prcje_Mayoreo<=0 then
+  begin
+    MessageDlg('¿El porcentaje de ganancia de mayoreo es igual o menor a cero, ¿Desea continuar guardando el artículo con pérdidas? ', System.UITypes.TMsgDlgType.mtInformation,
+    [System.UITypes.TMsgDlgBtn.mbOK,System.UITypes.TMsgDlgBtn.mbNo], 0, procedure(const AResult: System.UITypes.TModalResult)
+    begin
+      case AResult of
+        mrOk:
+        begin
+         Exit
+        end;
+        mrNo:
+      end;
+    end);
+    EditPrecioMayoreo.SetFocus;
     Result:=False;
     Exit;
   end;

@@ -123,6 +123,13 @@ type
     Layout6: TLayout;
     Layout7: TLayout;
     Layout9: TLayout;
+    GridPanelLayout1: TGridPanelLayout;
+    imgArt: TImage;
+    imgLinea: TImage;
+    imgEmp: TImage;
+    imgTrabajo: TImage;
+    imgConfig: TImage;
+    imgPass: TImage;
     procedure GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure ConexionBeforeConnect(Sender: TObject);
@@ -187,18 +194,29 @@ type
       var KeyChar: Char; Shift: TShiftState);
     procedure btnEditarClick(Sender: TObject);
     procedure FondoOscuroClick(Sender: TObject);
+    procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char;
+      Shift: TShiftState);
+    procedure FormVirtualKeyboardHidden(Sender: TObject;
+      KeyboardVisible: Boolean; const Bounds: TRect);
+    procedure FormVirtualKeyboardShown(Sender: TObject;
+      KeyboardVisible: Boolean; const Bounds: TRect);
+    procedure imgArtClick(Sender: TObject);
+    procedure imgPassClick(Sender: TObject);
+    procedure imgTrabajoClick(Sender: TObject);
+    procedure imgLineaClick(Sender: TObject);
+    procedure imgConfigClick(Sender: TObject);
   private
    Hoy :TDateTime;
    ComboEmpSelected:Boolean;
    ComboEmpListaSelected:Boolean;
-   CantidadTrabajo:Integer;
+   //CantidadTrabajo:Integer;
    CantidadLimite:Integer;
    CantidadXDia:Integer;
    Separacion:Integer;
    Tiempo:Integer;
    Dias_Eliminar:Integer;
    C_Articulos,C_Empleados,C_Reparacion:Integer;
-   Editando:Boolean;
+   TecladoActivo,Editando:Boolean;
     { Private declarations }
   public
   Flete:Integer;
@@ -262,7 +280,7 @@ begin
         OcultarTeclado;
         if Editando then
         Begin
-          Farticulos.editId.Text:=FDMemART.FieldByName('ID').AsString;
+          Farticulos.ID:=FDMemART.FieldByName('ID').AsInteger;
           fArticulos.BuscarArticulo;
         End;
       finally
@@ -829,10 +847,35 @@ begin
   CargaConfiguracion;
 end;
 
+procedure TMainForm.FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char;
+  Shift: TShiftState);
+begin
+   if  Tecladoactivo then
+  begin
+    if Key = vkHardwareBack  then
+    begin
+      OcultarTeclado;
+    end
+  end;
+end;
+
 procedure TMainForm.FormShow(Sender: TObject);
 begin
   ObtenerTipoTrabajo;
   LimpiarDatos;
+end;
+
+procedure TMainForm.FormVirtualKeyboardHidden(Sender: TObject;
+  KeyboardVisible: Boolean; const Bounds: TRect);
+begin
+  TecladoActivo:=True;
+end;
+
+procedure TMainForm.FormVirtualKeyboardShown(Sender: TObject;
+  KeyboardVisible: Boolean; const Bounds: TRect);
+begin
+
+ TecladoActivo:=False;
 end;
 
 procedure TMainForm.GestureDone(Sender: TObject; const EventInfo: TGestureEventInfo; var Handled: Boolean);
@@ -853,6 +896,94 @@ begin
       end;
   end;
 end;
+procedure TMainForm.imgArtClick(Sender: TObject);
+begin
+   Editando:=False;
+  if C_Articulos.ToBoolean then
+  begin
+    Art:=True;
+    Repa:=False;
+    Linea:=False;
+    Avan:=False;
+    FondoOscuro.Visible:=True;
+    Mensaje.Visible:=True;
+    Edtpass.SetFocus;
+  end
+  else
+  begin
+    Farticulos:=TFarticulos.Create(nil);
+    try
+      Farticulos.Show;
+    finally
+      Farticulos.Free;
+    end;
+  end
+end;
+
+procedure TMainForm.imgConfigClick(Sender: TObject);
+begin
+  Art:=False;
+  Repa:=False;
+  Linea:=False;
+  Avan:=True;
+  FondoOscuro.Visible:=True;
+  Mensaje.Visible:=True;
+  Edtpass.SetFocus;
+end;
+
+procedure TMainForm.imgLineaClick(Sender: TObject);
+begin
+  if C_Empleados.ToBoolean then
+  begin
+    Art:=False;
+    Repa:=False;
+    Linea:=True;
+    Avan:=False;
+    FondoOscuro.Visible:=True;
+    Mensaje.Visible:=True;
+    Edtpass.SetFocus;
+  end
+  else
+  begin
+    Lineas:=TLineas.Create(nil);
+    try
+      Lineas.Show;
+    finally
+      Lineas.Free;
+    end;
+    end
+end;
+
+procedure TMainForm.imgPassClick(Sender: TObject);
+begin
+  FondoOscuro.Visible:=True;
+  Mensajech.Visible:=True;
+  Edtpass1.SetFocus;
+end;
+
+procedure TMainForm.imgTrabajoClick(Sender: TObject);
+begin
+    if C_Reparacion.ToBoolean then
+  begin
+    Art:=False;
+    Repa:=True;
+    Linea:=False;
+    Avan:=False;
+    FondoOscuro.Visible:=True;
+    Mensaje.Visible:=True;
+    Edtpass.SetFocus;
+  end
+  else
+  begin
+    Reparacion:=TReparacion.Create(nil);
+    try
+      Reparacion.Show;
+    finally
+      Reparacion.Free;
+    end;
+  end
+end;
+
 //Pendiente
 Procedure TMainForm.InsertarLista;
 begin

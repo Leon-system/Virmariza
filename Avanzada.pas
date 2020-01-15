@@ -27,8 +27,6 @@ type
     Layout7: TLayout;
     Label3: TLabel;
     edtMax: TEdit;
-    ToolBar1: TToolBar;
-    Image1: TImage;
     procedure btnGuardarClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ObtenerDetalle;

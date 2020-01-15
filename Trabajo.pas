@@ -24,8 +24,6 @@ type
     Label1: TLabel;
     Line1: TLine;
     edtSeparacion: TEdit;
-    ToolBar1: TToolBar;
-    Image1: TImage;
     procedure BtnGuardarTrabajoClick(Sender: TObject);
     procedure InsertarTrabajo;
     procedure BuscarTrabajo;

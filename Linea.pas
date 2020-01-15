@@ -29,8 +29,6 @@ type
     BtnBorrarTrabajo: TButton;
     ComboTrabajo: TComboBox;
     EdtInfo: TEdit;
-    ToolBar1: TToolBar;
-    Image1: TImage;
     procedure InsertarLinea;
     procedure InsertarEmpleado;
     procedure InsertarTrabajo;
