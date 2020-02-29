@@ -1,4 +1,4 @@
-unit Linea;
+unit Empleado;
 
 interface
 
@@ -14,12 +14,13 @@ uses
   FireDAC.Comp.DataSet, FireDAC.Comp.Client;
 
 type
-  TLineas = class(TForm)
+  TEmpleados = class(TForm)
     LayoutEmp: TLayout;
     Layout3: TLayout;
-    EditLinea: TEdit;
+    EditEmp: TEdit;
     BtnGuardarEmp: TButton;
     BtnBorrarEmp: TButton;
+    EdtGanancia: TEdit;
     StringGridEmp: TStringGrid;
     FDMemLista: TFDMemTable;
     FDMemListaNombre: TStringField;
@@ -28,8 +29,8 @@ type
     BindingsList1: TBindingsList;
     LinkGridToDataSourceBindSourceDB1: TLinkGridToDataSource;
     FDMemListaID: TIntegerField;
-    procedure InsertarLinea;
-    procedure BorrarLinea;
+    procedure InsertarEmpleado;
+    procedure BorrarEmpleado;
     procedure BuscarEmp;
     procedure FormShow(Sender: TObject);
     procedure BtnGuardarEmpClick(Sender: TObject);
@@ -44,7 +45,7 @@ type
   end;
 
 var
-  Lineas: TLineas;
+  Empleados: TEmpleados;
 
 implementation
 
@@ -55,31 +56,30 @@ uses Main, Androidapi.JNI.Toasts, FGX.Toasts, FGX.Toasts.Android, Funciones_Andr
 
 { TLineas }
 
-
-procedure TLineas.BorrarLinea;
+procedure TEmpleados.BorrarEmpleado;
 begin
    try
     with MainForm.FDQueryInsertar,SQL do
     begin
       Clear;
-      Add('Delete from Linea where Rowid=:ID');
+      Add('Delete from Empleado where rowid=:ID');
       Params[0].AsInteger:=FDMemListaID.AsInteger;
       MainForm.FDQueryInsertar.ExecSQL;
       BuscarEmp;
-      ToastImagen('Linea eliminada',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
+      ToastImagen('Empleado eliminado',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
     end;
     except
     on E:exception do
-    ShowMessage('No se pudo borrar la linea '+e.Message);
+    ShowMessage('No se pudo borrar el empleado '+e.Message);
   end;
 end;
 
-procedure TLineas.btnbackClick(Sender: TObject);
+procedure TEmpleados.btnbackClick(Sender: TObject);
 begin
   MainForm.Show;
 end;
 
-procedure TLineas.BtnBorrarEmpClick(Sender: TObject);
+procedure TEmpleados.BtnBorrarEmpClick(Sender: TObject);
 begin
   begin
      MessageDlg('¿Desea eliminar el empleado seleccionado? ', System.UITypes.TMsgDlgType.mtInformation,
@@ -88,7 +88,7 @@ begin
       case AResult of
         mrOk:
         begin
-          BorrarLinea;
+          BorrarEmpleado;
         end;
         mrNo:
       end;
@@ -96,7 +96,7 @@ begin
   end;
 end;
 
-procedure TLineas.BuscarEmp;
+procedure TEmpleados.BuscarEmp;
 begin
   try
     FDMemLista.DisableControls;
@@ -106,7 +106,7 @@ begin
     begin
       Active :=  False;
       Clear;
-      Add('Select Rowid,Nombre From Linea');
+      Add('Select Rowid,Nombre,Ganancia From Empleado');
       close;
       Open;
       while not Eof do
@@ -114,7 +114,7 @@ begin
         FDMemLista.Append;
         (FDMemLista.FieldByName('ID') as TIntegerField).AsInteger:= Fields[0].AsInteger;
         (FDMemLista.FieldByName('Nombre') as TStringField).AsString:= Fields[1].AsString;
-        //(FDMemLista.FieldByName('Porcentaje de Ganancia') as TStringField).AsString:= Fields[2].AsString+'%';
+        (FDMemLista.FieldByName('Porcentaje de Ganancia') as TStringField).AsString:= Fields[2].AsString+'%';
         FDMemLista.Post;
         Next;
       end;
@@ -126,44 +126,48 @@ begin
   end;
 end;
 
-procedure TLineas.BtnGuardarEmpClick(Sender: TObject);
+procedure TEmpleados.BtnGuardarEmpClick(Sender: TObject);
 begin
-   if EditLinea.Text.Equals('') then ShowMessage('Inserte una linea') else
+  if EditEmp.Text.Equals('') or EdtGanancia.Text.Equals('') then ShowMessage('Inserte nombre y ganancia del empleado') else
   begin
-    InsertarLinea;
-    MainForm.ObtenerLineas;
+    InsertarEmpleado;
     BuscarEmp;
   end;
+
+  MainForm.ObtenerEmpleadosLista;
+  MainForm.ObtenerEmpleadosTrabajo;
 end;
 
 
-procedure TLineas.FormShow(Sender: TObject);
+procedure TEmpleados.FormShow(Sender: TObject);
 begin
   BuscarEmp;
 end;
 
-procedure TLineas.Image1Click(Sender: TObject);
+procedure TEmpleados.Image1Click(Sender: TObject);
 begin
   MainForm.Show;
 end;
 
-
-
-procedure TLineas.InsertarLinea;
+procedure TEmpleados.InsertarEmpleado;
 begin
   try
     with MainForm.FDQueryInsertar,SQL do
     begin
       Clear;
-      Add('insert into linea (Nombre) values ('+''''+EditLinea.Text+''''+')');
+      Add('insert into Empleado (Nombre,Ganancia) ');
+      Add('values (:Nombre,:Ganancia)');
+      Params[0].AsString:=EditEmp.Text;
+      Params[1].AsString:=EdtGanancia.Text;
       MainForm.FDQueryInsertar.ExecSQL;
-      EditLinea.Text:='';
+      EditEmp.Text:='';
+      EdtGanancia.Text:='';
       OcultarTeclado;
-      ToastImagen('Linea insertada exitosamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
+      ToastImagen('Empleado insertado exitosamente',false,MainForm.LogoVirma.Bitmap,$FFFFFF,$FF000000);
     end;
   except
     on E:exception do
-      ShowMessage('No se pudo insertar la linea '+e.Message);
+      ShowMessage('No se pudo insertar el empleado '+e.Message);
   end;
 end;
 

@@ -44,7 +44,8 @@ uses
   Presentacion in 'Presentacion.pas' {fPresentacion},
   Funciones_Android in 'Funciones_Android.pas',
   Trabajo in 'Trabajo.pas' {Reparacion},
-  Avanzada in 'Avanzada.pas' {FAvanzada};
+  Avanzada in 'Avanzada.pas' {FAvanzada},
+  Empleado in 'Empleado.pas' {Empleados};
 
 {$R *.res}
 
@@ -56,5 +57,6 @@ begin
   Application.CreateForm(TfPresentacion, fPresentacion);
   Application.CreateForm(TReparacion, Reparacion);
   Application.CreateForm(TFAvanzada, FAvanzada);
+  Application.CreateForm(TEmpleados, Empleados);
   Application.Run;
 end.

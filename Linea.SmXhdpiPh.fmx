@@ -1,0 +1,27 @@
+inherited Lineas_SmXhdpiPh: TLineas_SmXhdpiPh
+  ClientHeight = 375
+  ClientWidth = 250
+  DesignerMasterStyle = 3
+  inherited LayoutLinea: TLayout
+    Size.Width = 250.000000000000000000
+    inherited Layout1: TLayout
+      Size.Width = 250.000000000000000000
+      inherited EditLinea: TEdit
+        Size.Width = 0.000000000000000000
+        Size.Height = 41.000000000000000000
+      end
+      inherited btnGuardarLinea: TButton
+        Position.X = 67.000000000000000000
+      end
+      inherited BtnBorrarLinea: TButton
+        Position.X = -118.000000000000000000
+      end
+    end
+  end
+  inherited StringGridEmp: TStringGrid
+    Position.Y = 21.000000000000000000
+    Size.Width = 250.000000000000000000
+    Viewport.Width = 250.000000000000000000
+    Viewport.Height = 354.000000000000000000
+  end
+end

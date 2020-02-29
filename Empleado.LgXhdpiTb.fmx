@@ -1,0 +1,23 @@
+inherited Empleados_LgXhdpiTb: TEmpleados_LgXhdpiTb
+  ClientHeight = 829
+  ClientWidth = 480
+  DesignerMasterStyle = 3
+  inherited LayoutEmp: TLayout
+    Size.Width = 480.000000000000000000
+    inherited Layout3: TLayout
+      Size.Width = 480.000000000000000000
+      inherited BtnGuardarEmp: TButton
+        Position.X = 297.000000000000000000
+      end
+      inherited BtnBorrarEmp: TButton
+        Position.X = 120.000000000000000000
+      end
+    end
+  end
+  inherited StringGridEmp: TStringGrid
+    Position.Y = 475.000000000000000000
+    Size.Width = 480.000000000000000000
+    Viewport.Width = 480.000000000000000000
+    Viewport.Height = 354.000000000000000000
+  end
+end

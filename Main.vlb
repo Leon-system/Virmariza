@@ -72,7 +72,7 @@ Coordinates=610,90,92,51
 Coordinates=146,337,70,33
 
 [FdMemArt]
-Coordinates=1432,190,65,33
+Coordinates=1732,230,65,33
 Visible=True
 
 []
@@ -95,7 +95,7 @@ Coordinates=67,318,75,33
 Coordinates=280,80,82,33
 
 [BindSourceDB1]
-Coordinates=1357,180,92,285
+Coordinates=1657,220,92,213
 
 [StringGrid2]
 Coordinates=0,0,70,159
@@ -150,17 +150,18 @@ Coordinates=440,410,94,33
 Visible=False
 
 [FDMemFilaTrabajo]
-Coordinates=970,430,106,33
+Coordinates=1434,470,106,33
 Visible=True
 
 [FDMemTrabajosDescripcion]
 Coordinates=768,419,153,33
 
 [StringGridTrabajos]
-Coordinates=610,450,108,123
+Coordinates=670,370,108,123
+Visible=True
 
 [BindSourceDB3]
-Coordinates=440,410,92,141
+Coordinates=470,380,92,141
 
 [ComboEmpleadosLista]
 Coordinates=132,411,128,123
@@ -175,7 +176,7 @@ Coordinates=210,78,150,33
 Coordinates=290,500,89,87
 
 [BindSourceDB4]
-Coordinates=833,483,94,105
+Coordinates=1318,460,94,105
 
 [FechaLista]
 Coordinates=760,188,115,51
@@ -199,7 +200,7 @@ Coordinates=938,56,125,33
 Coordinates=0,446,120,33
 
 [FDMemLista]
-Coordinates=657,590,75,33
+Coordinates=997,630,75,33
 Visible=True
 
 [FDMemTable1Informacion]
@@ -209,7 +210,7 @@ Coordinates=404,80,143,33
 Coordinates=704,625,121,33
 
 [BindSourceDB2]
-Coordinates=400,590,92,123
+Coordinates=912,620,92,123
 
 [Empleado]
 Coordinates=53,502,63,51
@@ -218,11 +219,120 @@ Coordinates=53,502,63,51
 Coordinates=457,334,48,51
 
 [btnReparacion]
-Coordinates=425,10,79,51
+Coordinates=425,10,86,51
 
 [lblSubtotal]
-Coordinates=320,125,46,51
+Coordinates=320,125,67,51
 
 [lblTotal]
-Coordinates=459,186,46,51
+Coordinates=459,186,50,51
+
+[btnChangePass]
+Coordinates=416,135,92,51
+
+[LayoutChange]
+Coordinates=99,78,85,33
+
+[Layout8]
+Coordinates=787,78,53,33
+
+[Layout5]
+Coordinates=442,776,53,33
+
+[mensaje]
+Coordinates=373,776,55,33
+
+[lytBotones]
+Coordinates=885,111,67,33
+
+[btnRegresar]
+Coordinates=608,167,75,51
+
+[Layout3]
+Coordinates=304,776,53,33
+
+[btnAccept]
+Coordinates=531,640,64,51
+
+[edtPass1]
+Coordinates=787,681,59,51
+
+[btnEditar]
+Coordinates=331,640,59,51
+
+[GridPanelLayout1]
+Coordinates=1122,56,102,33
+
+[imgTrabajo]
+Coordinates=99,1,69,51
+
+[edtNewPass]
+Coordinates=15,640,75,51
+
+[imgLinea]
+Coordinates=511,776,59,51
+
+[MensajeCh]
+Coordinates=885,265,68,33
+
+[btnBack]
+Coordinates=787,758,54,51
+
+[LayoutMensaje]
+Coordinates=1009,111,88,33
+
+[Button1]
+Coordinates=617,321,53,51
+
+[imgConfig]
+Coordinates=104,640,65,51
+
+[lblNombre]
+Coordinates=708,776,65,51
+
+[Layout6]
+Coordinates=235,776,53,33
+
+[edtpass]
+Coordinates=296,1,53,51
+
+[imgEmp]
+Coordinates=160,344,54,51
+
+[btnch]
+Coordinates=18,344,42,51
+
+[lblPrecio]
+Coordinates=617,244,57,51
+
+[Layout7]
+Coordinates=166,776,53,33
+
+[Layout4]
+Coordinates=97,776,53,33
+
+[imgPass]
+Coordinates=580,776,56,51
+
+[imgArt]
+Coordinates=649,776,47,51
+
+[lblBolero]
+Coordinates=262,640,58,51
+
+[Layout9]
+Coordinates=28,776,53,33
+
+[FondoOscuro]
+Coordinates=1009,166,81,33
+
+[btnConfAv]
+Coordinates=183,640,66,51
+
+[Empleados.FDMemLista]
+Visible=False
+Coordinates=392,625,133,33
+
+[Empleados.BindSourceDB1]
+Coordinates=392,625,150,123
 

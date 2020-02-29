@@ -486,6 +486,10 @@
             <Form>FAvanzada</Form>
             <FormType>fmx</FormType>
         </DCCReference>
+        <DCCReference Include="Empleado.pas">
+            <Form>Empleados</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
         <JavaReference Include="java\output\jar\test_classes.jar">
             <Disabled/>
         </JavaReference>

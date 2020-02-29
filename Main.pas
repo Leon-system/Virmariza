@@ -194,8 +194,6 @@ type
       var KeyChar: Char; Shift: TShiftState);
     procedure btnEditarClick(Sender: TObject);
     procedure FondoOscuroClick(Sender: TObject);
-    procedure FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char;
-      Shift: TShiftState);
     procedure FormVirtualKeyboardHidden(Sender: TObject;
       KeyboardVisible: Boolean; const Bounds: TRect);
     procedure FormVirtualKeyboardShown(Sender: TObject;
@@ -205,6 +203,7 @@ type
     procedure imgTrabajoClick(Sender: TObject);
     procedure imgLineaClick(Sender: TObject);
     procedure imgConfigClick(Sender: TObject);
+    procedure imgEmpClick(Sender: TObject);
   private
    Hoy :TDateTime;
    ComboEmpSelected:Boolean;
@@ -232,7 +231,7 @@ var
 implementation
 
 uses
-  Linea, Articulos, Presentacion, Funciones_Android, Trabajo, Avanzada;
+  Linea, Articulos, Presentacion, Funciones_Android, Trabajo, Avanzada, Empleado;
 
 {$R *.fmx}
 {$R *.LgXhdpiTb.fmx ANDROID}
@@ -289,14 +288,14 @@ begin
     end
     else if Linea then
     begin
-      Lineas:=TLineas.Create(nil);
+      Empleados:=TEmpleados.Create(nil);
       try
-        Lineas.Show;
+        Empleados.Show;
         mensaje.Visible:=false;
         FondoOscuro.Visible:=False;
         OcultarTeclado;
       finally
-        Lineas.Free;
+        Empleados.Free;
       end;
     end
     else if Repa then
@@ -847,18 +846,6 @@ begin
   CargaConfiguracion;
 end;
 
-procedure TMainForm.FormKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char;
-  Shift: TShiftState);
-begin
-   if  Tecladoactivo then
-  begin
-    if Key = vkHardwareBack  then
-    begin
-      OcultarTeclado;
-    end
-  end;
-end;
-
 procedure TMainForm.FormShow(Sender: TObject);
 begin
   ObtenerTipoTrabajo;
@@ -931,7 +918,7 @@ begin
   Edtpass.SetFocus;
 end;
 
-procedure TMainForm.imgLineaClick(Sender: TObject);
+procedure TMainForm.imgEmpClick(Sender: TObject);
 begin
   if C_Empleados.ToBoolean then
   begin
@@ -945,13 +932,35 @@ begin
   end
   else
   begin
-    Lineas:=TLineas.Create(nil);
+    Empleados:=TEmpleados.Create(nil);
     try
-      Lineas.Show;
+      Empleados.Show;
     finally
-      Lineas.Free;
+      Empleados.Free;
     end;
     end
+end;
+
+procedure TMainForm.imgLineaClick(Sender: TObject);
+begin
+ { if C_Empleados.ToBoolean then
+  begin
+    Art:=False;
+    Repa:=False;
+    Linea:=True;
+    Avan:=False;
+    FondoOscuro.Visible:=True;
+    Mensaje.Visible:=True;
+    Edtpass.SetFocus;
+  end
+  else
+  }
+  Lineas:=TLineas.Create(nil);
+  try
+    Lineas.Show;
+  finally
+    Lineas.Free;
+  end;
 end;
 
 procedure TMainForm.imgPassClick(Sender: TObject);

@@ -79,7 +79,7 @@ object FAvanzada: TFAvanzada
         Size.Height = 50.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
-        Text = 'Lineas y empleados'
+        Text = 'Empleados'
       end
     end
     object Layout5: TLayout

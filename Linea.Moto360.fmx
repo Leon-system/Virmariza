@@ -1,0 +1,27 @@
+inherited Lineas_Moto360: TLineas_Moto360
+  ClientHeight = 218
+  ClientWidth = 240
+  DesignerMasterStyle = 3
+  inherited LayoutLinea: TLayout
+    Size.Width = 240.000000000000000000
+    inherited Layout1: TLayout
+      Size.Width = 240.000000000000000000
+      inherited EditLinea: TEdit
+        Size.Width = 0.000000000000000000
+        Size.Height = 41.000000000000000000
+      end
+      inherited btnGuardarLinea: TButton
+        Position.X = 57.000000000000000000
+      end
+      inherited BtnBorrarLinea: TButton
+        Position.X = -128.000000000000000000
+      end
+    end
+  end
+  inherited StringGridEmp: TStringGrid
+    Position.Y = -136.000000000000000000
+    Size.Width = 240.000000000000000000
+    Viewport.Width = 240.000000000000000000
+    Viewport.Height = 354.000000000000000000
+  end
+end

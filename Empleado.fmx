@@ -1,4 +1,4 @@
-object Lineas: TLineas
+object Empleados: TEmpleados
   Left = 0
   Top = 0
   Caption = 'fLineas'
@@ -21,12 +21,12 @@ object Lineas: TLineas
       Size.Height = 41.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
-      object EditLinea: TEdit
+      object EditEmp: TEdit
         Touch.InteractiveGestures = [LongTap, DoubleTap]
         Align = Left
-        TabOrder = 0
+        TabOrder = 1
         Position.Y = 4.000000000000000000
-        Size.Width = 353.000000000000000000
+        Size.Width = 199.000000000000000000
         Size.Height = 32.000000000000000000
         Size.PlatformDefault = False
         TextPrompt = 'Nombre'
@@ -37,7 +37,7 @@ object Lineas: TLineas
         Size.Width = 183.000000000000000000
         Size.Height = 41.000000000000000000
         Size.PlatformDefault = False
-        TabOrder = 1
+        TabOrder = 2
         Text = 'Guardar'
         OnClick = BtnGuardarEmpClick
       end
@@ -47,9 +47,21 @@ object Lineas: TLineas
         Size.Width = 177.000000000000000000
         Size.Height = 41.000000000000000000
         Size.PlatformDefault = False
-        TabOrder = 2
+        TabOrder = 3
         Text = 'Borrar'
         OnClick = BtnBorrarEmpClick
+      end
+      object EdtGanancia: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Left
+        TabOrder = 0
+        KeyboardType = NumberPad
+        Position.X = 199.000000000000000000
+        Position.Y = 4.000000000000000000
+        Size.Width = 169.000000000000000000
+        Size.Height = 32.000000000000000000
+        Size.PlatformDefault = False
+        TextPrompt = '%Ganancia'
       end
     end
   end
@@ -63,8 +75,8 @@ object Lineas: TLineas
     Size.PlatformDefault = False
     TabOrder = 1
     Options = [ColumnResize, ColumnMove, ColLines, RowLines, Tabs, Header, HeaderClick, AutoDisplacement]
-    Viewport.Width = 723.000000000000000000
-    Viewport.Height = 322.000000000000000000
+    Viewport.Width = 728.000000000000000000
+    Viewport.Height = 354.000000000000000000
   end
   object FDMemLista: TFDMemTable
     FetchOptions.AssignedValues = [evMode]
@@ -97,8 +109,8 @@ object Lineas: TLineas
   object BindingsList1: TBindingsList
     Methods = <>
     OutputConverters = <>
-    Left = 652
-    Top = 85
+    Left = 20
+    Top = 5
     object LinkGridToDataSourceBindSourceDB1: TLinkGridToDataSource
       Category = 'Quick Bindings'
       DataSource = BindSourceDB1
@@ -108,6 +120,11 @@ object Lineas: TLineas
           MemberName = 'Nombre'
           ReadOnly = True
           Width = 250
+        end
+        item
+          MemberName = 'Porcentaje de Ganancia'
+          ReadOnly = True
+          Width = 400
         end>
     end
   end
